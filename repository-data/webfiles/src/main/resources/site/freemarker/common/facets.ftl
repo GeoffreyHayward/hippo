@@ -37,6 +37,10 @@
                             <!--taxonomy facet is dealt with separately to render the tree structure-->
                             <#if facet.name="category">
                                 <@taxonomyFacets taxonomy.rootTaxonomyFacets/>
+                                <div class="filter-vis-toggles">
+                                    <a href="#" class="filter-vis-toggle filter-vis-toggle--show filter-vis-toggle--expand">Expand all (${facetItems?size})</a>
+                                    <a href="#" class="filter-vis-toggle filter-vis-toggle--hide filter-vis-toggle--collapse is-hidden">Collapse all</a>
+                                </div>
                             <#else>
                                 <#list facetItems as value>
                                     <#assign valueName="Not Defined"/>
@@ -101,7 +105,7 @@
             </#if>
 
             <#if taxonomyFacet.children?has_content>
-                <ul <#if taxonomyFacet.facetBean.leaf><#else>class="is-hidden"</#if>>
+                <ul class="filter-list<#if taxonomyFacet.facetBean.leaf><#else> is-hidden</#if>">
                     <@taxonomyFacets taxonomyFacet.children/>
                 </ul>
             </#if>
@@ -183,13 +187,23 @@
             var $hideToggleButton = ulElement.getElementsByClassName('filter-vis-toggle--hide')[0];
 
             if ('full' == ulElement.dataset.state) {
-                hideListItems(ulElement);
+                if ($showToggleButton.classList.contains('filter-vis-toggle--collapse')) {
+                    collapseListItems(ulElement);
+                } else {
+                    hideListItems(ulElement);
+                }
+
                 ulElement.dataset.state = 'short';
 
                 vjsUtils.removeClass($showToggleButton, 'is-hidden');
                 vjsUtils.addClass($hideToggleButton, 'is-hidden');
             } else {
-                showListItems(ulElement);
+                if ($showToggleButton.classList.contains('filter-vis-toggle--expand')) {
+                    expandListItems(ulElement);
+                } else {
+                    showListItems(ulElement);
+                }
+
                 ulElement.dataset.state = 'full'
 
                 vjsUtils.addClass($showToggleButton, 'is-hidden');
@@ -209,13 +223,22 @@
             setDisplayItems(ulElement, true);
         }
 
-        function setDisplayItems(ulElement, display) {
+        function expandListItems(ulElement) {
+            setDisplayItems(ulElement, true, true);
+            var $children = ulElement.getElementsByClassName('filter-list')[0];
+        }
+
+        function collapseListItems(ulElement) {
+            setDisplayItems(ulElement, true);
+        }
+
+        function setDisplayItems(ulElement, display, force) {
             var listItems = ulElement.getElementsByClassName('filter-list__item');
 
             for (var i = 0; i < listItems.length; i ++) {
                 var listItem = listItems[i];
 
-                if (i >= ulElement.dataset.maxCount) {
+                if (i >= ulElement.dataset.maxCount || force) {
                     if (display) {
                         vjsUtils.removeClass(listItem, 'is-hidden');
                     } else {
