@@ -9,6 +9,7 @@
 <#include "macro/latestblogs.ftl">
 <#include "macro/personitem.ftl">
 <#include "macro/contentPixel.ftl">
+<#include "macro/shareThisPage.ftl">
 
 <#-- Add meta tags -->
 <@metaTags></@metaTags>
@@ -44,25 +45,25 @@
                             <div class="nhsd-o-hero__content">
 
                                 <span class="nhsd-a-tag nhsd-a-tag--phase">Blog</span>
-                                
-                                <#if document.title?has_content> 
-                                <span class="nhsd-t-heading-xl nhsd-!t-margin-top-3">${document.title}</span>
+
+                                <#if document.title?has_content>
+                                <span class="nhsd-t-heading-xl nhsd-!t-margin-top-3" data-uipath="document.title">${document.title}</span>
                                 </#if>
 
                                 <#if document.shortsummary?has_content>
-                                <p class="nhsd-t-heading-s nhsd-!t-margin-bottom-6">${document.shortsummary}</p>
-                                </#if> 
+                                <p class="nhsd-t-heading-s nhsd-!t-margin-bottom-6" data-uipath="website.blog.shortsummary">${document.shortsummary}</p>
+                                </#if>
 
                                 <div class="nhsd-o-hero__meta-data nhsd-!t-margin-bottom-6">
                                     <#if hasAuthors>
                                         <div class="nhsd-o-hero__meta-data-item">
                                             <div class="nhsd-o-hero__meta-data-item-title">Author<#if document.authors?size gt 1 >s</#if>: </div>
-                                            
+
                                             <div class="nhsd-t-grid nhsd-!t-no-gutters">
                                                 <#list document.authors as author>
                                                     <div class="nhsd-t-row">
                                                         <div class="nhsd-t-col-12 nhsd-!t-no-gutters">
-                                                            <#assign onClickMethodCall = getOnClickMethodCall(document.class.name, author.title) /> 
+                                                            <#assign onClickMethodCall = getOnClickMethodCall(document.class.name, author.title) />
                                                             <div class="nhsd-o-hero__meta-data-item-description"><a class="nhsd-a-link" href="<@hst.link hippobean=author/>" onClick="${onClickMethodCall}">${author.title}<span class="nhsd-t-sr-only"></span></a><#if author.roles??><#if author.roles.primaryroles?has_content>, ${author.roles.firstprimaryrole}</#if></#if><#if author.roles??><#if author.roles.primaryroleorg?has_content>, ${author.roles.primaryroleorg}</#if></#if></div>
                                                         </div>
                                                     </div>
@@ -76,12 +77,27 @@
                                             ${document.authorName}<#if document.authorJobTitle?has_content>, ${document.authorJobTitle}</#if><#if document.authororganisation?has_content>, ${document.authororganisation}</#if></div>
                                         </div>
                                     </#if>
+
                                     <#if document.dateOfPublication.time?has_content >
                                         <div class="nhsd-o-hero__meta-data-item">
                                             <div class="nhsd-o-hero__meta-data-item-title">Date: </div>
-                                            <div class="nhsd-o-hero__meta-data-item-description"><@fmt.formatDate value=document.dateOfPublication.time type="Date" pattern="d MMMM yyyy" timeZone="${getTimeZone()}" /></div>
+                                            <div class="nhsd-o-hero__meta-data-item-description" data-uipath="website.blog.dateofpublication"><@fmt.formatDate value=document.dateOfPublication.time type="Date" pattern="d MMMM yyyy" timeZone="${getTimeZone()}" /></div>
+                                        </div>
+                                    </#if>
+
+                                    <#if hasTopics>
+                                        <div class="nhsd-o-hero__meta-data-item">
+                                            <div class="nhsd-o-hero__meta-data-item-title">Topic<#if document.topics?size gt 1 >s</#if>: </div>
+                                            <div class="nhsd-o-hero__meta-data-item-description" itemprop="keywords" data-uipath="website.blog.topics"><#list document.topics as tag>${tag}<#sep>, </#list></div>
                                         </div>
                                     </#if> 
+
+                                    <#if hasBlogCategories>
+                                        <div class="nhsd-o-hero__meta-data-item">
+                                            <div class="nhsd-o-hero__meta-data-item-title">Categories: </div>
+                                            <div class="nhsd-o-hero__meta-data-item-description" itemprop="keywords" data-uipath="website.blog.categories"><#list document.caseStudyCategories as category>${category}<#sep>, </#list></div>
+                                        </div>
+                                    </#if>
                                 </div>
                             </div>
                         </div>
@@ -102,11 +118,11 @@
 
                                 <span class="nhsd-a-tag nhsd-a-tag--phase">Blog</span>
 
-                                <#if document.title?has_content> 
+                                <#if document.title?has_content>
                                     <span class="nhsd-t-heading-xl nhsd-!t-margin-up-3">${document.title}</span>
                                 </#if>
-                                
-                                <#if document.summary?has_content> 
+
+                                <#if document.summary?has_content>
                                 <p class="nhsd-t-heading-s nhsd-!t-margin-bottom-6">${document.shortsummary}</p>
                                 </#if>
 
@@ -118,7 +134,7 @@
                                                 <#list document.authors as author>
                                                     <div class="nhsd-t-row">
                                                         <div class="nhsd-t-col-12 nhsd-!t-no-gutters">
-                                                            <#assign onClickMethodCall = getOnClickMethodCall(document.class.name, author.title) /> 
+                                                            <#assign onClickMethodCall = getOnClickMethodCall(document.class.name, author.title) />
                                                             <div class="nhsd-o-hero__meta-data-item-description"><a class="nhsd-a-link" href="<@hst.link hippobean=author/>" onClick="${onClickMethodCall}">${author.title}<span class="nhsd-t-sr-only"></span></a><#if author.roles??><#if author.roles.primaryroles?has_content>, ${author.roles.firstprimaryrole}</#if></#if><#if author.roles??><#if author.roles.primaryroleorg?has_content>, ${author.roles.primaryroleorg}</#if></#if></div>
                                                         </div>
                                                     </div>
@@ -131,10 +147,25 @@
                                             <div class="nhsd-o-hero__meta-data-item-description"><a class="nhsd-a-link" href="#">${document.authorName}<span class="nhsd-t-sr-only"></span></a><#if document.authorJobTitle?has_content>, ${document.authorJobTitle}</#if><#if document.authororganisation?has_content>, ${document.authororganisation}</#if></div>
                                         </div>
                                     </#if>
+                                    
                                     <#if document.dateOfPublication.time?has_content >
                                         <div class="nhsd-o-hero__meta-data-item">
                                             <div class="nhsd-o-hero__meta-data-item-title">Date: </div>
                                             <div class="nhsd-o-hero__meta-data-item-description"><@fmt.formatDate value=document.dateOfPublication.time type="Date" pattern="d MMMM yyyy" timeZone="${getTimeZone()}" /></div>
+                                        </div>
+                                    </#if>
+
+                                    <#if hasTopics>
+                                        <div class="nhsd-o-hero__meta-data-item">
+                                            <div class="nhsd-o-hero__meta-data-item-title">Topic<#if document.topics?size gt 1 >s</#if>: </div>
+                                            <div class="nhsd-o-hero__meta-data-item-description" itemprop="keywords" data-uipath="website.blog.topics"><#list document.topics as tag>${tag}<#sep>, </#list></div>
+                                        </div>
+                                    </#if> 
+
+                                    <#if hasBlogCategories>
+                                        <div class="nhsd-o-hero__meta-data-item">
+                                            <div class="nhsd-o-hero__meta-data-item-title">Categories: </div>
+                                            <div class="nhsd-o-hero__meta-data-item-description" itemprop="keywords" data-uipath="website.blog.categories"><#list document.caseStudyCategories as category>${category}<#sep>, </#list></div>
                                         </div>
                                     </#if>
                                 </div>
@@ -153,7 +184,7 @@
             </div>
         </div>
     </#if>
-    
+
     <div class="nhsd-t-grid " aria-label="document-content">
         <div class="nhsd-t-row">
             <div class="nhsd-t-col-12">
@@ -187,6 +218,9 @@
                 </#if>
 
                 <#if hasSectionContent>
+                    <#if !hasLeadImage>
+                        <hr class="nhsd-a-horizontal-rule" />
+                    </#if>
                     <div itemprop="articleBody">
                         <@sections document.sections></@sections>
                     </div>
@@ -197,14 +231,17 @@
                         <hr class="nhsd-a-horizontal-rule" />
                     </#if>
                     <div itemprop="articleBody">
-                        <div class="nhsd-a-box nhsd-a-box--bg-light-blue nhsd-!t-margin-bottom-6" data-uipath="website.blog.backstory">
+                        <div class="nhsd-a-box nhsd-a-box--bg-light-blue nhsd-!t-margin-bottom-6"">
                             <p class="nhsd-t-heading-m">Back story</p>
-                            <@hst.html hippohtml=document.backstory contentRewriter=brContentRewriter />
+                            <div data-uipath="website.blog.backstory"><@hst.html hippohtml=document.backstory contentRewriter=brContentRewriter /></div>
                         </div>
                     </div>
                 </#if>
 
                 <#if hasContactDetails>
+                    <#if hasSectionContent && !hasBackstory>
+                        <hr class="nhsd-a-horizontal-rule" />
+                    </#if>
                     <div class="nhsd-m-contact-us nhsd-!t-margin-bottom-6" aria-label="">
                         <div class="nhsd-a-box nhsd-a-box--bg-light-blue-10">
                             <div class="nhsd-m-contact-us__content">
@@ -218,6 +255,9 @@
                 </#if>
 
                 <#if hasRelatedSubjects>
+                    <#if hasSectionContent && !hasBackstory && !hasContactDetails>
+                        <hr class="nhsd-a-horizontal-rule" />
+                    </#if>
                     <div class="nhsd-!t-margin-bottom-6">
                         <h2 class="nhsd-t-heading-xl">Related subjects</h2>
                         <#list document.relatedSubjects as item>
@@ -232,75 +272,45 @@
                 </#if>
 
                 <div class="nhsd-!t-margin-bottom-6" itemprop="articleBody">
-
+                    <#if hasRelatedSubjects || hasSectionContent && !hasBackstory && !hasContactDetails && !hasRelatedSubjects>
+                        <hr class="nhsd-a-horizontal-rule" />
+                    </#if>
                     <h2 class="nhsd-t-heading-xl">Share this page</h2>
                     <#-- Use UTF-8 charset for URL escaping from now: -->
                     <#setting url_escaping_charset="UTF-8">
-                    <@hst.link var="link" hippobean=document />
 
                     <div class="nhsd-t-grid nhsd-!t-margin-bottom-4 nhsd-!t-no-gutters">
                        
                         <#--  Facebook  -->
-                        <div class="nhsd-t-row">
-                            <div class="nhsd-t-col-12 nhsd-!t-no-gutters">
-                                <a class="nhsd-a-icon-link nhsd-a-icon-link--dark-grey" href="http://www.facebook.com/sharer.php?u=${currentUrl?url}" rel="external" onClick="logGoogleAnalyticsEvent('Link click','Social media - Facebook','http://www.facebook.com/sharer.php?u=${currentUrl?url}');">
-                                    <span class="nhsd-a-icon nhsd-a-icon--size-xxl">
-                                        <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" viewBox="0 0 16 16">
-                                            <path d="M8,16l-6.9-4V4L8,0l6.9,4v8L8,16z M2,11.5L8,15l6-3.5v-7L8,1L2,4.5V11.5z"/>
-                                        </svg>
-                                        <img src="<@hst.webfile path="/images/icon/rebrand-facebook.svg"/>" alt="Share on Facebook" aria-hidden="true">
-                                    </span>
-                                    <span class="nhsd-a-icon-link__label">Facebook</span>
-                                    <span class="nhsd-t-sr-only">${srOnlyLinkText}</span>
-                                </a>
-                            </div>
-                        </div>
+                        <#assign facebookUrl = "http://www.facebook.com/sharer.php?u=${currentUrl?url}"/>
+                        <#assign facebookIconPath = "/images/icon/rebrand-facebook.svg" />
+                        <@shareThisPage document "Facebook" facebookUrl facebookIconPath/>
+
                             
                         <#--  Twitter  -->
-                        <div class="nhsd-t-row">
-                            <div class="nhsd-t-col-12 nhsd-!t-no-gutters">
-                                <#assign hashtags ='' />
-                                <#if hasTwitterHashtag>
-                                    <#list document.twitterHashtag as tag>
-                                        <#if tag?starts_with("#")>
-                                            <#assign hashtags = hashtags + tag?keep_after('#') + ','>
-                                        <#else>
-                                            <#assign hashtags = hashtags + tag + ','>
-                                        </#if>
-                                    </#list>
+                        <#assign hashtags ='' />
+                        <#if hasTwitterHashtag>
+                            <#list document.twitterHashtag as tag>
+                                <#if tag?starts_with("#")>
+                                    <#assign hashtags = hashtags + tag?keep_after('#') + ','>
+                                <#else>
+                                    <#assign hashtags = hashtags + tag + ','>
                                 </#if>
-                                <a class="nhsd-a-icon-link nhsd-a-icon-link--dark-grey" href="https://twitter.com/intent/tweet?via=nhsdigital&url=${currentUrl?url}&text=${document.title?url}&hashtags=${hashtags?url}" rel="external" onClick="logGoogleAnalyticsEvent('Link click','Social media - Twitter','https://twitter.com/intent/tweet?via=nhsdigital&url=${currentUrl?url}&text=${document.title?url}&hashtags=${hashtags?url}');">
-                                    <span class="nhsd-a-icon nhsd-a-icon--size-xxl">
-                                        <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" viewBox="0 0 16 16">
-                                            <path d="M8,16l-6.9-4V4L8,0l6.9,4v8L8,16z M2,11.5L8,15l6-3.5v-7L8,1L2,4.5V11.5z"/>
-                                        </svg>
-                                        <img src="<@hst.webfile path="/images/icon/rebrand-twitter.svg"/>" alt="Share on Twitter" aria-hidden="true">
-                                    </span>
-                                    <span class="nhsd-a-icon-link__label">Twitter</span>
-                                    <span class="nhsd-t-sr-only">${srOnlyLinkText}</span>
-                                </a>
-                            </div>
-                        </div>
+                            </#list>
+                        </#if>
+                        <#assign twitterUrl = "https://twitter.com/intent/tweet?via=nhsdigital&url=${currentUrl?url}&text=${document.title?url}&hashtags=${hashtags?url}"/>
+                        <#assign twitterIconPath = "/images/icon/rebrand-twitter.svg" />
+                        <@shareThisPage document "Twitter" twitterUrl twitterIconPath/>
 
                         <#--  LinkedIn  -->
-                        <div class="nhsd-t-row">
-                            <div class="nhsd-t-col-12 nhsd-!t-no-gutters">
-                                <a class="nhsd-a-icon-link nhsd-a-icon-link--dark-grey" href="http://www.linkedin.com/shareArticle?mini=true&url=${currentUrl?url}&title=${document.title?url}&summary=${document.shortsummary?url}" rel="external" onClick="logGoogleAnalyticsEvent('Link click','Social media - LinkedIn','http://www.linkedin.com/shareArticle?mini=true&url=${currentUrl?url}&title=${document.title?url}&summary=${document.shortsummary?url}');">
-                                    <span class="nhsd-a-icon nhsd-a-icon--size-xxl">
-                                        <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" viewBox="0 0 16 16">
-                                            <path d="M8,16l-6.9-4V4L8,0l6.9,4v8L8,16z M2,11.5L8,15l6-3.5v-7L8,1L2,4.5V11.5z"/>
-                                        </svg>
-                                        <img src="<@hst.webfile path="/images/icon/rebrand-linkedin.svg"/>" alt="Share on LinkedIn" aria-hidden="true">
-                                    </span>
-                                    <span class="nhsd-a-icon-link__label">LinkedIn</span>
-                                    <span class="nhsd-t-sr-only">${srOnlyLinkText}</span>
-                                </a>
-                            </div>
-                        </div>
+                        <#assign linkedInUrl = "http://www.linkedin.com/shareArticle?mini=true&url=${currentUrl?url}&title=${document.title?url}&summary=${document.shortsummary?url}"/>
+                        <#assign linkedInIconPath = "/images/icon/rebrand-linkedin.svg" />
+                        <@shareThisPage document "LinkedIn" linkedInUrl linkedInIconPath/>
                     </div>
                 </div>
 
                 <#if hasAuthors>
+                    <hr class="nhsd-a-horizontal-rule" />
                     <h2 class="nhsd-t-heading-xl"> Author<#if document.authors?size gt 1 >s</#if> </h2>
                     <div class="nhsd-o-gallery">
                         <div class="nhsd-t-grid nhsd-!t-no-gutters">
@@ -309,12 +319,12 @@
                                     <div class="nhsd-t-col-xs-12 nhsd-t-col-s-6 nhsd-t-col-m-4">
                                         <div class="nhsd-o-gallery__card-container">
                                             <div class="nhsd-m-card">
-                                                <#assign onClickMethodCall = getOnClickMethodCall(document.class.name, author.title) /> 
+                                                <#assign onClickMethodCall = getOnClickMethodCall(document.class.name, author.title) />
                                                 <a href="<@hst.link hippobean=author/>"  onClick="${onClickMethodCall}" onKeyUp="return vjsu.onKeyUp(event)" class="nhsd-a-box-link nhsd-a-box-link--focus-orange" aria-label="About NHS Digital" >
                                                     <div class="nhsd-a-box nhsd-a-box--bg-light-grey">
-                                                    <#if author.personimages.picture.authorPhotoLarge2x?has_content> 
+                                                    <#if author.personimages.picture.authorPhotoLarge2x?has_content>
                                                         <div class="nhsd-m-card__image_container">
-                                                            <figure class="nhsd-a-image nhsd-a-image--contain">
+                                                            <figure class="nhsd-a-image nhsd-a-image--maintain-ratio">
                                                                 <picture class="nhsd-a-image__picture ">
                                                                     <@hst.link hippobean=author.personimages.picture.authorPhotoLarge2x fullyQualified=true var="authorPicture" />
                                                                     <img src="${authorPicture}" alt="${author.title}">
