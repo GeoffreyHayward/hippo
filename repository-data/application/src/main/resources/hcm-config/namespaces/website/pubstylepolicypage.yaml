@@ -22,8 +22,8 @@ definitions:
           /pubstyle:
             /cluster.options:
               jcr:primaryType: frontend:pluginconfig
-              selectable.options: Use parent style,Regular page banner,Hero module,Slim
-                picture
+              selectable.options: parent=Use parent style,bluebanner=Regular page
+                banner,heromodule=Hero module,slimpicture=Slim picture
             caption: Publication style
             field: pubstyle
             hint: ''
@@ -65,7 +65,7 @@ definitions:
             hipposysedit:ordered: false
             hipposysedit:path: website:bannerimage
             hipposysedit:primary: false
-            hipposysedit:type: hippo:mirror
+            hipposysedit:type: hippogallerypicker:imagelink
             jcr:primaryType: hipposysedit:field
           /pubstyle:
             hipposysedit:mandatory: false
@@ -90,9 +90,7 @@ definitions:
       /hipposysedit:prototypes:
         /hipposysedit:prototype:
           /website:bannerimage:
-            /website:link:
-              hippo:docbase: cafebabe-cafe-babe-cafe-babecafebabe
-              jcr:primaryType: hippo:mirror
+            hippo:docbase: cafebabe-cafe-babe-cafe-babecafebabe
             jcr:primaryType: website:internallink
           jcr:primaryType: website:pubstylepolicypage
           website:banneralttext: ''

@@ -22,11 +22,22 @@ definitions:
           /publicationStyle:
             /cluster.options:
               jcr:primaryType: frontend:pluginconfig
-              selectable.options: Regular page banner,Hero module,Slim picture
+              selectable.options: bluebanner=Regular page banner,heromodule=Hero module,slimpicture=Slim
+                picture
             caption: Publication style
             field: publicationStyle
+            hint: ''
             jcr:primaryType: frontend:plugin
             plugin.class: org.hippoecm.frontend.editor.plugins.field.PropertyFieldPlugin
+            wicket.id: ${cluster.id}.field
+          /bannerimage:
+            /cluster.options:
+              jcr:primaryType: frontend:pluginconfig
+            caption: Banner Image
+            field: imagelink
+            hint: ''
+            jcr:primaryType: frontend:plugin
+            plugin.class: org.hippoecm.frontend.editor.plugins.field.NodeFieldPlugin
             wicket.id: ${cluster.id}.field
           /banneralttext:
             /cluster.options:
@@ -65,6 +76,14 @@ definitions:
             hipposysedit:primary: false
             hipposysedit:type: StaticDropdown
             jcr:primaryType: hipposysedit:field
+          /imagelink:
+            hipposysedit:mandatory: false
+            hipposysedit:multiple: false
+            hipposysedit:ordered: false
+            hipposysedit:path: website:bannerimage
+            hipposysedit:primary: false
+            hipposysedit:type: hippogallerypicker:imagelink
+            jcr:primaryType: hipposysedit:field
           /publicationStyle:
             hipposysedit:mandatory: false
             hipposysedit:multiple: false
@@ -87,6 +106,9 @@ definitions:
         jcr:primaryType: hippo:handle
       /hipposysedit:prototypes:
         /hipposysedit:prototype:
+          /website:bannerimage:
+            hippo:docbase: cafebabe-cafe-babe-cafe-babecafebabe
+            jcr:primaryType: website:internallink
           jcr:primaryType: website:pubstylesection
           website:banneralttext: ''
         jcr:primaryType: hipposysedit:prototypeset
