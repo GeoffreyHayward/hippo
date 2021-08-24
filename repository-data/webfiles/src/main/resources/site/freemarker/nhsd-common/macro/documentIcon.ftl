@@ -103,7 +103,7 @@
                 </g>
             </svg>
         </span>
-    <#elseif icontype == "xls" >
+    <#elseif icontype == "xls" || icontype?lower_case == "xlsx" >
         <span class="nhsd-a-document-icon ${sizeClass}">
             <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" viewBox="0 0 39 46">
                 <polygon points="30,9 39,9 39,9 30.1,0 30,0" fill="#006646"></polygon>
