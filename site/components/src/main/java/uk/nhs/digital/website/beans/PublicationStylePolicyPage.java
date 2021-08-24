@@ -14,8 +14,8 @@ public class PublicationStylePolicyPage extends HippoCompound {
     }
 
     @HippoEssentialsGenerated(internalName = "website:bannerimage")
-    public String getBannerImage() {
-        return getSingleProperty("website:bannerimage");
+    public CorporateWebsiteImageset getBannerImage() {
+        return getLinkedBean("website:bannerimage", CorporateWebsiteImageset.class);
     }
 
     @HippoEssentialsGenerated(internalName = "website:banneralttext")
