@@ -126,8 +126,8 @@
         <@heroModule heroConfig true />
     </#if>
     <#if publicationStyle == 'slimpicture'>
-        <#if imageDocument.bannerImage.pageHeaderSlimBannerSmall2x??>
-            <@hst.link hippobean=imageDocument.bannerImage.pageHeaderSlimBannerSmall2x fullyQualified=true var="selectedBannerImage" />
+        <#if imageDocument.publicationStyle.bannerImage.pageHeaderSlimBannerSmall2x??>
+            <@hst.link hippobean=imageDocument.publicationStyle.bannerImage.pageHeaderSlimBannerSmall2x fullyQualified=true var="selectedBannerImage" />
             <#assign bannerImage = selectedBannerImage />
         </#if>
         <#assign slimPictureConfig = {
@@ -137,7 +137,7 @@
         "topText": parentText,
         "topTextLink": parentLink
         } />
-        <@slimPicture slimPictureConfig />
+        <@slimPicture slimPictureConfig true/>
     </#if>
     <#if hasChapters>
         <@chapterNav document "Current chapter – " />
