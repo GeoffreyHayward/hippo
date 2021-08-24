@@ -2,7 +2,7 @@
 <#include "../../../include/imports.ftl">
 <#include "../../macros/header-banner.ftl">
 
-<#macro slimPicture config>
+<#macro slimPicture config showDownload=false>
     <#local document = config.document />
 
     <#if config.bannerImage == "">
@@ -33,7 +33,7 @@
                                     topText?is_string && topText?length gt 0 &&
                                     topTextLink?is_string && topTextLink?length gt 0>
                                     <p class="hero-module__toptext">
-                                        Part of 
+                                        Part of
                                         <a class="nhsd-a-link nhsd-a-link--col-white" href=${topTextLink}>
                                             ${topText}
                                         </a>
@@ -43,12 +43,17 @@
                                 </#if>
 
                                 <span class="nhsd-t-heading-xl nhsd-!t-col-white" data-uipath="document.title">${document.title}</span>
-                                
+
                                 <#if hasSummaryContent>
                                     <span data-uipath="website.publishedwork.summary"
                                     >
                                     <@hst.html hippohtml=document.summary contentRewriter=brContentRewriter/>
                                     </span>
+                                </#if>
+                                <#if showDownload>
+                                    <a class="nhsd-a-button nhsd-a-button--invert js-print-pdf-button" id="print-pdf-button">
+                                        <span class="nhsd-a-button__label"><@fmt.message key="labels.download-pdf"/></span>
+                                    </a>
                                 </#if>
                             </div>
                         </div>

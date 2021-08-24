@@ -12,7 +12,7 @@ showTime - boolean: show time from passed document
 topText - string: show this top text if no time is supplied
 topTextLink - string: make top text into a link if this is supplied
 -->
-<#macro heroModule config  showDownload=false>
+<#macro heroModule config showDownload=false>
     <#local document = config.document />
 
     <#if config.bannerImage == "">
