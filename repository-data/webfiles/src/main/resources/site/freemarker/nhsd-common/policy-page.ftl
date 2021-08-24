@@ -56,7 +56,7 @@
 </#if>
 
 <#if parentWork.publicationStyle.button??>
-    <#assign button = parentWork.button />
+    <#assign button = parentWork.publicationStyle.button />
 </#if>
 
 <#if publicationStyle = 'heromodule'>
@@ -108,8 +108,8 @@
     </#if>  -->
 
     <#if publicationStyle == 'heromodule' || publicationStyle == 'bluebanner'>
-        <#if imageDocument.bannerImage.pageHeaderHeroModule??>
-            <@hst.link hippobean=imageDocument.bannerImage.pageHeaderHeroModule fullyQualified=true var="selectedBannerImage" />
+        <#if imageDocument.publicationStyle.bannerImage.pageHeaderHeroModule??>
+            <@hst.link hippobean=imageDocument.publicationStyle.bannerImage.pageHeaderHeroModule fullyQualified=true var="selectedBannerImage" />
             <#assign bannerImage = selectedBannerImage />
         </#if>
         <#assign heroConfig = {
@@ -123,7 +123,7 @@
         "topTextLink": parentLink
         }
         />
-        <@heroModule heroConfig />
+        <@heroModule heroConfig true />
     </#if>
     <#if publicationStyle == 'slimpicture'>
         <#if imageDocument.bannerImage.pageHeaderSlimBannerSmall2x??>

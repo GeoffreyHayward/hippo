@@ -141,10 +141,12 @@ definitions:
             jcr:primaryType: frontend:plugin
             plugin.class: org.onehippo.forge.contentblocks.ContentBlocksFieldPlugin
             wicket.id: ${cluster.id}.field
+            wicket.skin: skin/content-blocks.css
           /childPage:
             /cluster.options:
               base.path: /content/documents
               jcr:primaryType: frontend:pluginconfig
+              nodetypes: website:policypage
             caption: Child Page
             field: childPage
             jcr:primaryType: frontend:plugin
@@ -196,9 +198,11 @@ definitions:
             hipposysedit:path: website:bodySection
             hipposysedit:primary: false
             hipposysedit:type: hippo:compound
+            hipposysedit:validators:
+            - contentblocks-validator
             jcr:primaryType: hipposysedit:field
           /childPage:
-            hipposysedit:mandatory: false
+            hipposysedit:mandatory: true
             hipposysedit:multiple: true
             hipposysedit:ordered: false
             hipposysedit:path: website:childPage

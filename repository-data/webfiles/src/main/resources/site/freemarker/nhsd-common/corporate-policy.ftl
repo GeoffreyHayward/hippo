@@ -80,7 +80,7 @@
         "showTime": true
         }
         />
-        <@heroModule heroConfig />
+        <@heroModule heroConfig true/>
     </#if>
 
     <#if publicationStyle == 'slimpicture'>
@@ -112,7 +112,7 @@
         <@chapterNav document />
     </#if>
     <div class="nhsd-t-grid">
-        <div class="nhsd-t-row">
+        <div class="nhsd-t-row" id="document-content">
             <#if renderNav>
                 <div class="nhsd-t-col-xs-12 nhsd-t-col-s-4">
                     <!-- start sticky-nav -->
