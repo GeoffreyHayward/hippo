@@ -94,7 +94,7 @@
         "bannerImageAltText": document.publicationStyle.imageAltText
         }
         />
-        <@slimPicture slimPictureConfig />
+        <@slimPicture slimPictureConfig true/>
     </#if>
 
     <#if hasChildPages>
