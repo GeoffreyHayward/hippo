@@ -297,6 +297,11 @@ jobs:
         with:
           script: |
             core.setFailed('Upload Build to BR Cloud failed!')
+        env:
+          # For debugging
+          ID: ${{ steps.distribution.outputs.id }}
+          ID-LENGTH: ${{ steps.distribution.outputs.id.length }}
+
 
       - name: Slack message (failed to upload )
         if: ${{ failure() }}
