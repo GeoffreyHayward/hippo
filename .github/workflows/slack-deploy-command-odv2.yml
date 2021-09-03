@@ -292,7 +292,7 @@ jobs:
         working-directory: ${{steps.download.outputs.download-path}}
 
       - name: Check Response has ID from Upload Build to BR Cloud
-        if: ${{ steps.distribution.outputs.id.lenght === 36 }}
+        if: ${{ steps.distribution.outputs.id.length === 36 }}
         uses: actions/github-script@v3
         with:
           script: |
