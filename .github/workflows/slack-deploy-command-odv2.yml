@@ -165,7 +165,7 @@ jobs:
         uses: muinmomin/webhook-action@v1.0.0
         with:
           url: ${{ env.SLACK_WEBHOOK }}
-          data: '{ "channel": "${{ env.CHANNEL_ID }}", "text": "Pipeline progress...", "attachments": [{ "text" : "The pipeline failed to loacate the built artifact",  "color": "#DA291C" }] }'
+          data: '{ "channel": "${{ env.CHANNEL_ID }}", "text": "Pipeline progress...", "attachments": [{ "text" : "The pipeline failed to locate the built artifact",  "color": "#DA291C" }] }'
 
       #
       # Todo: success slack message that gives a link to the GitHub action for downloading the build for debugging.
@@ -291,8 +291,8 @@ jobs:
           echo "::set-output name=id::$id"
         working-directory: ${{steps.download.outputs.download-path}}
 
-      - name: Check Response Code from Upload Build to BR Cloud
-        if: ${{ steps.distribution.outputs.code != 200 }}
+      - name: Check Response has ID from Upload Build to BR Cloud
+        if: ${{ steps.distribution.outputs.id.lenght === 36 }}
         uses: actions/github-script@v3
         with:
           script: |
@@ -352,7 +352,7 @@ jobs:
       - name: Request Deployment from BR Cloud
         id: deployment
         run: |
-          curl -i \
+          curl -L \
           -H "Accept: application/json; charset=utf-8" \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X PUT https://api.${{ secrets.HOST }}/v3/environments/${{ env.ENVIRONMENT }}/deploy \
