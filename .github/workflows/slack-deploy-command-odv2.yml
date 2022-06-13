@@ -1,5 +1,5 @@
 name: Slack Deployment Command for ODv2
-
+#Slack deployment command for ODv2 (TST,Development, CS)
 on:
   repository_dispatch:
     types:
@@ -207,9 +207,21 @@ jobs:
           result-encoding: json
           script: |
             const environments = {
+              C031HQR9Q0P: {
+                "name" : "cs",
+                "id": "dde633ee-047e-437e-a29e-1704ff9fe98a"
+              },
               C026PH4GQSH: {
                 "name": "development",
                 "id": "c033120b-291a-463c-8ba7-363fb50ea072",
+              },
+              C0323S3FW4T: {
+                "name": "tst",
+                "id": "02a04095-4e56-4893-8d9d-64a0ef3699e9"
+              },
+              C03AADPJJRY: {
+                "name": "training",
+                "id": "374d6efc-bc9f-476c-bd9f-a3b1653d845a"
               }
             }
             if(environments[`${process.env.CHANNEL_ID}`] === undefined) {
@@ -276,20 +288,34 @@ jobs:
       # Main steps
       - name: Download version artifact
         uses: actions/download-artifact@v2
-        id: down
+        id: download
 
+      #
+      # Get and store the details of the download
+      #
+      - name: Get artifact details
+        id: details
+        run: |
+          echo '::set-output name=distribution::'$(echo ls *.tar.gz | awk '{ print $2 }')
+          echo '::set-output name=version::'$(echo ls *.tar.gz | awk '{ print $2 }' | grep -oP '(?<=website-).*(?=-distribution.tar.gz)')
+        working-directory: ${{steps.download.outputs.download-path}}/build
+
+      #
+      # Upload Build to BR Cloud
+      #
       - name: Upload Build to BR Cloud
         id: distribution
         run: |
-          filelist=($(ls build/))
-          file="dist_file=@build/${filelist[0]}"
           response=$(curl -i \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X POST https://api.${{ secrets.HOST }}/v3/distributions \
-          -F $file)
+          -F "dist_file=@${{ env.DISTROBUTION }};filename=${{ env.VERSION }}.tar.gz")
           id=$(echo $response | awk 'match($0, /id":"[^"]+"/) {print substr($0, RSTART+5)}' | cut -d '"' -f 1 )
           echo "::set-output name=id::$id"
-        working-directory: ${{steps.download.outputs.download-path}}
+        env:
+          DISTROBUTION: ${{steps.details.outputs.distribution}}
+          VERSION: ${{steps.details.outputs.version}}
+        working-directory: ${{steps.download.outputs.download-path}}/build
 
       - name: Check Response has ID from Upload Build to BR Cloud
         if: ${{ steps.distribution.outputs.id.length == 36 }}
@@ -344,6 +370,12 @@ jobs:
           id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "hippo-ipfilter-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
           echo "::set-output name=id::${id}"
 
+      - name: Get latest Email SMTP properties File
+        id: brc-mail-smtp
+        run: |
+          id=$(echo '${{steps.files.outputs.details}}' | sed -e 's/+00:00/Z/g' | jq ' . | map( select( .name | startswith( "brc-mail-smtp-" ) ) ) | sort_by( .createdAt | fromdate ) | reverse | .[0].id')
+          echo "::set-output name=id::${id}"
+
 
       #
       # Request deployment from ODv2
@@ -361,7 +393,7 @@ jobs:
           -H "Accept: application/json; charset=utf-8" \
           -H "Authorization: Bearer ${{ steps.jwt_token.outputs.token }}" \
           -X PUT https://api.${{ secrets.HOST }}/v3/environments/${{ env.ENVIRONMENT }}/deploy \
-          -d '{ "distributionId": "${{ env.DISTRIBUTION }}", "strategy" : "rollingupdate", "appConfigFileRoles": [ { "appConfigFileId": ${{ steps.aws-keys.outputs.id }}, "role": "file", "newFilename": "aws-credentials.properties" }, { "appConfigFileId": ${{ steps.system-properties.outputs.id }}, "role": "systemproperty" }, { "appConfigFileId": ${{ steps.latest-ip-whitelist.outputs.id }}, "role": "file", "newFilename": "hippo-ipfilter.properties" } ] }'
+          -d '{ "distributionId": "${{ env.DISTRIBUTION }}", "strategy" : "rollingupdate", "appConfigFileRoles": [ { "appConfigFileId": ${{ steps.aws-keys.outputs.id }}, "role": "file", "newFilename": "aws-credentials.properties" }, { "appConfigFileId": ${{ steps.system-properties.outputs.id }}, "role": "systemproperty" }, { "appConfigFileId": ${{ steps.latest-ip-whitelist.outputs.id }}, "role": "file", "newFilename": "hippo-ipfilter.properties" }, { "appConfigFileId": ${{ steps.brc-mail-smtp.outputs.id }}, "role": "file", "newFilename": "brc-mail-smtp.properties" } ] }'
         env:
           DISTRIBUTION: ${{ steps.distribution.outputs.id }}
           ENVIRONMENT: ${{ fromJson(steps.find-target.outputs.result).id }}
@@ -415,11 +447,3 @@ jobs:
         with:
           url: ${{ env.SLACK_WEBHOOK }}
           data: '{ "channel": "${{ env.CHANNEL_ID }}", "text": "Pipeline progress...", "attachments": [{ "text" : "BR ODv2 is deploying. <@${{ env.USER_ID }}> You can track progress here https://missioncontrol.${{ secrets.HOST }}/#/environment/${{ fromJson(steps.find-target.outputs.result).id }}/details", "color": "#78BE20" }] }'
-
-
-      - name: Slack message (Always end message)
-        if: ${{ always() }}
-        uses: muinmomin/webhook-action@v1.0.0
-        with:
-          url: ${{ env.SLACK_WEBHOOK }}
-          data: '{ "channel": "${{ env.CHANNEL_ID }}", "text": "Pipeline Finished", "attachments": [{ "text" : "End of communication. You have a great day now.",  "color": "#005EB8" }] }'
