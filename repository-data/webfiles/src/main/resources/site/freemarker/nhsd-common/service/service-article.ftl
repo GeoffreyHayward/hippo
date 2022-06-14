@@ -3,7 +3,6 @@
 <#-- @ftlvariable name="document" type="uk.nhs.digital.website.beans.Service" -->
 
 <#include "../../include/imports.ftl">
-<#include "../macro/documentHeader.ftl">
 <#include "../macro/sections/sections.ftl">
 <#include "../macro/stickyNavSections.ftl">
 <#include "../macro/furtherInformationSection.ftl">
@@ -12,9 +11,9 @@
 <#include "../macro/latestblogs.ftl">
 <#include "../macro/component/calloutBox.ftl">
 <#include "../macro/contentPixel.ftl">
-<#include "../macros/header-banner.ftl">
-<#include "../macro/component/header-banner-image.ftl">
 <#import "../app-layout-head.ftl" as alh>
+<#include "../macro/heroes/hero.ftl">
+<#include "../macro/heroes/hero-options.ftl">
 
 <@hst.headContribution category="metadata">
     <meta name="robots" content="${document.noIndexControl?then("noindex","index")}"/>
@@ -49,15 +48,15 @@
 <@contentPixel document.getCanonicalUUID() document.title></@contentPixel>
 
 <article>
+
+    <#assign heroType = "default" />
     <#if hasBannerImage>
-        <@hst.link hippobean=document.image.original fullyQualified=true var="bannerImage" />
-        <@headerBannerImage document bannerImage />
-    <#else>
-        <@headerBanner document />
+        <#assign heroType = "image" />
     </#if>
 
+    <@hero getHeroOptions(document) heroType />
 
-    <div class="nhsd-t-grid">
+    <div class="nhsd-t-grid nhsd-!t-margin-top-8">
         <#if document.updates?has_content>
             <div class="nhsd-t-row">
                 <div class="nhsd-t-col-12">
@@ -74,7 +73,7 @@
 
         <div class="nhsd-t-row">
             <#if navStatus == "withNav" && renderNav>
-                <div class="nhsd-t-col-xs-12 nhsd-t-col-s-4">
+                <div class="nhsd-t-col-xs-12 nhsd-t-col-s-3">
                     <!-- start sticky-nav -->
                         <#assign links = [{ "url": "#top", "title": "Top of page" }] />
                         <#if document.latestNews?has_content >
@@ -91,14 +90,14 @@
                 </div>
             </#if>
 
-            <div class="${(navStatus == "withNav" || navStatus == "withoutNav")?then("nhsd-t-col-xs-12 nhsd-t-col-s-8", "nhsd-t-col-12")}">
+            <div class="${(navStatus == "withNav" || navStatus == "withoutNav")?then("nhsd-t-col-xs-12 nhsd-t-col-s-8 nhsd-t-off-s-1", "nhsd-t-col-12")}">
                 <#if document.priorityActions?has_content>
                     <div class="nhsd-o-card-list">
                         <div class="nhsd-t-grid nhsd-!t-no-gutters">
                             <div class="nhsd-t-row nhsd-o-card-list__items ">
                                 <#list document.priorityActions as action>
                                     <div class="nhsd-t-col-12 nhsd-!t-no-gutters">
-                                        <article class="nhsd-m-card">
+                                        <div class="nhsd-m-card">
                                             <@hst.link hippobean=action.link.link var="priorityActionInternalLink"/>
                                             <a <#if action.link.linkType == "internal">
                                                href="${priorityActionInternalLink}"
@@ -132,7 +131,7 @@
                                                     </div>
                                                 </div>
                                             </a>
-                                        </article>
+                                        </div>
                                     </div>
                                 </#list>
                             </div>
@@ -140,7 +139,13 @@
                     </div>
                 </#if>
 
-                <@latestblogs document.latestNews 'Service' 'latest-news-' + idsuffix 'Latest news' />
+                <#if document.latestNews?has_content>
+                    <#assign latestNews = document.latestNews />
+                    <#if document.relatedNews?has_content>
+                        <#assign latestNews += document.relatedNews />
+                    </#if>
+                    <@latestblogs latestNews 'Service' 'latest-news-' + idsuffix 'Latest news' false />
+                </#if>
 
                 <#if hasIntroductionContent>
                     <@hst.html hippohtml=document.introduction contentRewriter=brContentRewriter/>
@@ -156,7 +161,7 @@
                     </#if>
                     <div id="${slugify('Contact details')}">
                         <p class="nhsd-t-heading-xl"><@fmt.message key="headers.contact-details" /></p>
-                        <div class="nhsd-m-contact-us nhsd-!t-margin-bottom-6" aria-label="">
+                        <div class="nhsd-m-contact-us nhsd-!t-margin-bottom-6">
                             <div class="nhsd-a-box nhsd-a-box--bg-light-blue-10">
                                 <div class="nhsd-m-contact-us__content">
                                     <@hst.html hippohtml=document.contactdetails contentRewriter=brContentRewriter/>
@@ -166,8 +171,8 @@
                     </div>
                 </#if>
 
-                <#if !document.latestNews?has_content && document.relatedNews?has_content >
-                    <@latestblogs document.relatedNews 'Service' 'related-news-' + idsuffix 'Related news' />
+                <#if !document.latestNews?has_content && document.relatedNews?has_content>
+                    <@latestblogs document.relatedNews 'Service' 'related-news-' + idsuffix 'Related news' false />
                 </#if>
 
                 <#if hasChildPages>
@@ -177,7 +182,7 @@
                     <@furtherInformationSection childPages></@furtherInformationSection>
                 </#if>
 
-                <@latestblogs document.relatedEvents 'Service' 'events-' + idsuffix 'Forthcoming events' />
+                <@latestblogs document.relatedEvents 'Service' 'events-' + idsuffix 'Forthcoming events' false />
 
                 <@lastModified document.lastModified></@lastModified>
             </div>

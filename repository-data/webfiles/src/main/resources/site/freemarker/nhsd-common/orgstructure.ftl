@@ -8,7 +8,8 @@
 <#include "macro/metaTags.ftl">
 <#include "macro/component/lastModified.ftl">
 <#include "macro/contentPixel.ftl">
-<#include "macros/header-banner.ftl">
+<#include "macro/heroes/hero-options.ftl">
+<#include "macro/heroes/hero.ftl">
 
 <#-- Add meta tags -->
 <@metaTags></@metaTags>
@@ -30,9 +31,9 @@
     <#assign pageIcon = document.bannercontrols.icon />
   </#if>
 
-  <@headerBanner document />
+  <@hero getHeroOptions(document) />
 
-  <div class="nhsd-t-grid">
+  <div class="nhsd-t-grid nhsd-!t-margin-top-8">
     <div class="nhsd-t-row">
       <#if renderNav>
       <div class="nhsd-t-col-xs-12 nhsd-t-col-s-4">
@@ -162,7 +163,7 @@
                   <#if directorate.mainbusinessunit.businessunit?has_content>
                     <h4 class="nhsd-t-heading-m" id="${slugify(directorate.mainbusinessunit.businessunit.title)}" ${directorateStyle} >${directorate.mainbusinessunit.businessunit.title}</h4>
                     <p class="nhsd-t-body nhsd-!t-margin-top-3" >${directorate.mainbusinessunit.businessunit.shortsummary}</p>
-                    <a class="nhsd-a-button nhsd-a-button--invert ${(directorate.backgroundcolor == "#FAE100")?then("nhsd-a-button--custom","")}" type="button" style="max-width: 100%" href="<@hst.link hippobean=directorate.mainbusinessunit.businessunit/>">
+                    <a class="nhsd-a-button nhsd-a-button--invert ${(directorate.backgroundcolor == "#FAE100")?then("nhsd-a-button--custom","")}" style="max-width: 100%" href="<@hst.link hippobean=directorate.mainbusinessunit.businessunit/>">
                       <span class="nhsd-a-button__label">${directorate.mainbusinessunit.businessunit.title}</span>
                     </a>
                   </#if>

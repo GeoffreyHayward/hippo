@@ -9,16 +9,18 @@
 <#include "../component/downloadBlockAsset.ftl">
 <#include "../component/downloadBlockExternal.ftl">
 
-<#macro downloadSection section mainHeadingLevel=2 >
+<#macro downloadSection section mainHeadingLevel=2 orgPrompt=false>
     <#assign hasLinks = section.items?? && section.items?size gt 0 />
 
-    <div id="${slugify(section.heading)}" class="${(section.headingLevel == 'Main heading')?then('article-section navigationMarker', 'article-header__detail-lines navigationMarker-sub')}">
-
+    <#if section.heading?has_content>
+        <div id="${slugify(section.heading)}" class="${(section.headingLevel == 'Main heading')?then('article-section navigationMarker', 'article-header__detail-lines navigationMarker-sub')} nhsd-!t-margin-bottom-6">
+    <#else>
+        <div class="${(section.headingLevel == 'Main heading')?then('article-section navigationMarker', 'article-header__detail-lines navigationMarker-sub')} nhsd-!t-margin-bottom-6">
+    </#if>
         <#if section.headingLevel == 'Main heading'>
-            <hr class="nhsd-a-horizontal-rule" />
-            <h2 class="nhsd-t-heading-l" data-uipath="website.contentblock.download.title">${section.heading}</h2>
+            <h2 class="nhsd-t-heading-xl" data-uipath="website.contentblock.download.title">${section.heading}</h2>
         <#else>
-            <h3 class="nhsd-t-heading-s" data-uipath="website.contentblock.download.title">${section.heading}</h3>
+            <h3 class="nhsd-t-heading-l" data-uipath="website.contentblock.download.title">${section.heading}</h3>
         </#if>
 
         <div data-uipath="website.contentblock.download.description">
@@ -31,17 +33,17 @@
                     <div class="nhsd-t-col">
                         <#list section.items as block>
                             <#if block.linkType??>
-                                <div class="nhsd-!t-margin-bottom-6">
+                                <div ${block?is_last?then('', 'class=nhsd-!t-margin-bottom-4')}>
                                     <#if block.linkType == "internal">
-                                        <@downloadBlockInternal document.class.name block.link block.link.title block.link.shortsummary  />
+                                        <@downloadBlockInternal document.class.name block.link block.link.title block.link.shortsummary getFileExtension(block.link.name) />
                                     <#elseif block.linkType == "external">
                                         <#if getMimeTypeByExtension(getFileExtension(block.link))?has_content>
-                                            <@downloadBlockAsset document.class.name block.link "${block.title}" "${block.shortsummary}" getMimeTypeByExtension(getFileExtension(block.link)) "" true />
+                                            <@downloadBlockAsset document.class.name block.link "${block.title}" "${block.shortsummary}" getMimeTypeByExtension(getFileExtension(block.link)) "" true true orgPrompt />
                                         <#else>
-                                            <@downloadBlockExternal document.class.name block.link "${block.title}" "${block.shortsummary}" />
+                                            <@downloadBlockExternal document.class.name block.link "${block.title}" "${block.shortsummary}"/>
                                         </#if>
                                     <#elseif block.linkType == "asset">
-                                        <@downloadBlockAsset document.class.name block.link "${block.title}" "" block.link.asset.mimeType block.link.asset.getLength() />
+                                        <@downloadBlockAsset document.class.name block.link "${block.title}" "" block.link.asset.mimeType block.link.asset.getLength() false false orgPrompt block.link.archiveMaterial/>
                                     </#if>
                                 </div>
                             </#if>

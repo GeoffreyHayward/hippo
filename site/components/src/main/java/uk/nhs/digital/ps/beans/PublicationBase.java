@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static org.apache.commons.collections.IteratorUtils.toList;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.container.RequestContextProvider;
 import org.hippoecm.hst.content.beans.query.HstQuery;
 import org.hippoecm.hst.content.beans.query.HstQueryResult;
@@ -20,11 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.common.util.DocumentUtils;
 import uk.nhs.digital.ps.components.DocumentTitleComparator;
+import uk.nhs.digital.ps.directives.DateFormatterDirective;
 import uk.nhs.digital.ps.site.exceptions.DataRestrictionViolationException;
 import uk.nhs.digital.website.beans.News;
 import uk.nhs.digital.website.beans.SupplementaryInformation;
 import uk.nhs.digital.website.beans.Update;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,10 +38,13 @@ public abstract class PublicationBase extends BaseDocument {
     private static final Collection<String> propertiesPermittedWhenUpcoming = asList(
         PropertyKeys.TITLE,
         PropertyKeys.NOMINAL_DATE,
-        PropertyKeys.PUBLICLY_ACCESSIBLE,
         PropertyKeys.INFORMATION_TYPE,
         PropertyKeys.PARENT_SERIES
     );
+
+    public static final int HOUR_OF_PUBLIC_RELEASE = 9;
+    public static final int MINUTE_OF_PUBLIC_RELEASE = 30;
+    public static final String EARLY_ACCESS_KEY_QUERY_PARAM = "key";
 
     private RestrictableDate nominalPublicationDate;
 
@@ -109,22 +115,6 @@ public abstract class PublicationBase extends BaseDocument {
         return hippoBeans;
     }
 
-    @HippoEssentialsGenerated(internalName = PropertyKeys.TAXONOMY)
-    public String[] getKeys() {
-        return getPropertyIfPermittedMultiple(PropertyKeys.TAXONOMY);
-    }
-
-    @HippoEssentialsGenerated(internalName = PropertyKeys.INFORMATION_TYPE)
-    public String[] getInformationType() {
-        return getPropertyIfPermittedMultiple(PropertyKeys.INFORMATION_TYPE);
-    }
-
-    public List<String> getFullTaxonomyList() {
-        assertPropertyPermitted(Dataset.PropertyKeys.TAXONOMY);
-
-        return HippoBeanHelper.getFullTaxonomyList(this);
-    }
-
     /**
      * <p>
      * Returns Publication Date. If the date is more than {@linkplain #WEEKS_TO_CUTOFF} ahead
@@ -172,21 +162,6 @@ public abstract class PublicationBase extends BaseDocument {
         return getPropertyIfPermittedSingle(PropertyKeys.COVERAGE_END);
     }
 
-    @HippoEssentialsGenerated(internalName = PropertyKeys.GEOGRAPHIC_COVERAGE)
-    public String[] getGeographicCoverage() {
-        return geographicCoverageValuesToRegionValue(getPropertyIfPermittedMultiple(PropertyKeys.GEOGRAPHIC_COVERAGE));
-    }
-
-    @HippoEssentialsGenerated(internalName = PropertyKeys.GRANULARITY)
-    public String[] getGranularity() {
-        return getPropertyIfPermittedMultiple(PropertyKeys.GRANULARITY);
-    }
-
-    @HippoEssentialsGenerated(internalName = PropertyKeys.ADMINISTRATIVE_SOURCES)
-    public String getAdministrativeSources() {
-        return getPropertyIfPermittedSingle(PropertyKeys.ADMINISTRATIVE_SOURCES);
-    }
-
     @HippoEssentialsGenerated(internalName = PropertyKeys.TITLE)
     public String getTitle() {
         return getPropertyIfPermittedSingle(PropertyKeys.TITLE);
@@ -198,7 +173,12 @@ public abstract class PublicationBase extends BaseDocument {
     }
 
     public boolean isPubliclyAccessible() {
-        return getPropertyIfPermittedSingle(PropertyKeys.PUBLICLY_ACCESSIBLE);
+        return !getBeforePublicationDate() || isCorrectAccessKey() || isInternalViewAccess();
+    }
+
+    private boolean isInternalViewAccess() {
+        String servletPath = RequestContextProvider.get().getServletRequest().getServletPath();
+        return servletPath != null && servletPath.equalsIgnoreCase("/_cmsinternal");
     }
 
     @HippoEssentialsGenerated(internalName = PropertyKeys.RELATED_LINKS)
@@ -251,13 +231,29 @@ public abstract class PublicationBase extends BaseDocument {
         ).collect(Collectors.toList());
     }
 
+    public Boolean getBeforePublicationDate() {
+        Calendar publicationDate = getSingleProperty(PropertyKeys.NOMINAL_DATE);
+        if (publicationDate == null) {
+            return false;
+        }
+        LocalDateTime publicationDateTime = publicationDate.toInstant()
+            .atZone(DateFormatterDirective.TIME_ZONE.toZoneId()).toLocalDateTime()
+            .withHour(HOUR_OF_PUBLIC_RELEASE).withMinute(MINUTE_OF_PUBLIC_RELEASE)
+            .withSecond(0);
+
+        LocalDateTime currentDateTime = LocalDateTime
+            .now(DateFormatterDirective.TIME_ZONE.toZoneId());
+
+        return currentDateTime.isBefore(publicationDateTime);
+    }
+
     @Override
     protected void assertPropertyPermitted(final String propertyKey) {
-
         final boolean isPropertyPermitted =
             isPropertyAlwaysPermitted(propertyKey)
                 || isPubliclyAccessible()
-                || propertiesPermittedWhenUpcoming.contains(propertyKey);
+                || propertiesPermittedWhenUpcoming.contains(propertyKey)
+                || isCorrectAccessKey();
 
         if (!isPropertyPermitted) {
             throw new DataRestrictionViolationException(
@@ -266,9 +262,17 @@ public abstract class PublicationBase extends BaseDocument {
         }
     }
 
+    public boolean isCorrectAccessKey() {
+        return StringUtils
+            .isNotBlank(getSingleProperty(PublicationBase.PropertyKeys.EARLY_ACCESS_KEY))
+            && getSingleProperty(PublicationBase.PropertyKeys.EARLY_ACCESS_KEY).equals(
+            RequestContextProvider.get().getServletRequest().getParameter(
+                EARLY_ACCESS_KEY_QUERY_PARAM));
+    }
+
     private boolean isPropertyAlwaysPermitted(final String propertyKey) {
         return PropertyKeys.PARENT_BEAN.equals(propertyKey)
-            || PropertyKeys.PUBLICLY_ACCESSIBLE.equals(propertyKey);
+            || PropertyKeys.EARLY_ACCESS_KEY.equals(propertyKey);
     }
 
     interface PropertyKeys {
@@ -289,10 +293,10 @@ public abstract class PublicationBase extends BaseDocument {
         String GRANULARITY = "publicationsystem:Granularity";
         String ADMINISTRATIVE_SOURCES = "publicationsystem:AdministrativeSources";
         String TITLE = "publicationsystem:Title";
-        String PUBLICLY_ACCESSIBLE = "publicationsystem:PubliclyAccessible";
         String RELATED_LINKS = "publicationsystem:RelatedLinks";
         String RESOURCE_LINKS = "publicationsystem:ResourceLinks";
         String ATTACHMENTS_V3 = "publicationsystem:Attachments-v3";
+        String EARLY_ACCESS_KEY = "publicationsystem:earlyaccesskey";
 
         String PARENT_BEAN = "PARENT_BEAN";
         String PARENT_SERIES = "PARENT_SERIES";

@@ -5,12 +5,12 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.content.beans.standard.HippoHtml;
 import org.onehippo.cms7.essentials.dashboard.annotations.HippoEssentialsGenerated;
 
-
-import java.util.*;
+import java.util.List;
 
 @HippoEssentialsGenerated(internalName = "website:general")
 @Node(jcrType = "website:general")
 public class General extends CommonFieldsBean {
+
     @HippoEssentialsGenerated(internalName = "website:sections")
     public List<HippoBean> getSections() {
         return getChildBeansByName("website:sections");
@@ -47,12 +47,12 @@ public class General extends CommonFieldsBean {
     }
 
     @HippoEssentialsGenerated(internalName = "website:pageicon")
-    public CorporateWebsiteImageset getPageIcon()  {
+    public CorporateWebsiteImageset getPageIcon() {
         return getLinkedBean("website:pageicon", CorporateWebsiteImageset.class);
     }
 
     @HippoEssentialsGenerated(internalName = "website:leadimage")
-    public CorporateWebsiteImageset getLeadImage()  {
+    public CorporateWebsiteImageset getLeadImage() {
         return getLinkedBean("website:leadimage", CorporateWebsiteImageset.class);
     }
 
@@ -70,4 +70,14 @@ public class General extends CommonFieldsBean {
     public boolean getNoIndexControl() {
         return getSingleProperty("website:noindexcontrol");
     }
+
+    @HippoEssentialsGenerated(internalName = "website:propmtuserorg")
+    public String[] getPropmtUserOrg() {
+        return getMultipleProperty("website:propmtuserorg");
+    }
+
+    public String getEarlyAccessKey() {
+        return getSingleProperty("website:earlyaccesskey");
+    }
+
 }

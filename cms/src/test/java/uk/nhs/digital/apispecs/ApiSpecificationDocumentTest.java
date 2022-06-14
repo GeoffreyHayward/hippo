@@ -40,45 +40,13 @@ public class ApiSpecificationDocumentTest {
             .willReturn(Optional.of(expectedSpecificationId));
 
         // when
-        final String actualSpecificationId = apiSpecificationDocument.getId();
+        final String actualSpecificationId = apiSpecificationDocument.specificationId();
 
         // then
-        assertThat("HTML value is as returned from document proxy.",
+        assertThat("ID value is as returned from document proxy.",
             actualSpecificationId,
             is(expectedSpecificationId)
         );
-    }
-
-    @Test
-    public void html_delegatesToDocumentProxy() {
-
-        // given
-        final String expectedHtml = randomString();
-
-        given(jcrDocumentLifecycleSupport.getStringProperty("website:html", PUBLISHED))
-            .willReturn(Optional.of(expectedHtml));
-
-        // when
-        final Optional<String> actualHtml = apiSpecificationDocument.html();
-
-        // then
-        assertThat("HTML value is as returned from document proxy.",
-            actualHtml,
-            is(Optional.of(expectedHtml))
-        );
-    }
-
-    @Test
-    public void setHtml_delegatesToDocumentProxy() {
-
-        // given
-        final String updatedHtmlContent = randomString();
-
-        // when
-        apiSpecificationDocument.setHtmlForPublishing(updatedHtmlContent);
-
-        // then
-        then(jcrDocumentLifecycleSupport).should().setStringPropertyWithCheckout("website:html", updatedHtmlContent);
     }
 
     @Test
@@ -91,11 +59,11 @@ public class ApiSpecificationDocumentTest {
             .willReturn(Optional.of(expectedJson));
 
         // when
-        final Optional<String> actualHtml = apiSpecificationDocument.json();
+        final Optional<String> actualJson = apiSpecificationDocument.json();
 
         // then
         assertThat("JSON value is as returned from document proxy.",
-            actualHtml,
+            actualJson,
             is(Optional.of(expectedJson))
         );
     }
@@ -121,38 +89,6 @@ public class ApiSpecificationDocumentTest {
 
         // then
         then(jcrDocumentLifecycleSupport).should().saveAndPublish();
-    }
-
-    @Test
-    public void lastChangeCheckTime_delegatesToDocumentProxy() {
-
-        // given
-        final Instant expectedInstant = Instant.now();
-
-        given(jcrDocumentLifecycleSupport.getInstantProperty("website:lastChangeCheckInstant", PUBLISHED))
-            .willReturn(Optional.of(expectedInstant));
-
-        // when
-        final Optional<Instant> actualInstant = apiSpecificationDocument.lastChangeCheckInstant();
-
-        // then
-        assertThat("Last change check time value is as returned from document proxy.",
-            actualInstant,
-            is(Optional.of(expectedInstant))
-        );
-    }
-
-    @Test
-    public void setLastChangeCheckInstant_delegatesToDocumentProxy() {
-
-        // given
-        final Instant newInstant = Instant.now();
-
-        // when
-        apiSpecificationDocument.setLastChangeCheckInstantInPlace(newInstant);
-
-        // then
-        then(jcrDocumentLifecycleSupport).should().setInstantPropertyNoCheckout("website:lastChangeCheckInstant", PUBLISHED, newInstant);
     }
 
     @Test

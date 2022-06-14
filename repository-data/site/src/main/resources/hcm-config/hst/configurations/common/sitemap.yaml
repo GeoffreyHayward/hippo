@@ -45,6 +45,8 @@ definitions:
           - website:projectupdate
           - website:signup
           - website:video
+          - website:policypage
+          - website:corporatepolicy
           hst:componentconfigurationmappingvalues:
           - hst:pages/service
           - hst:pages/general
@@ -85,6 +87,8 @@ definitions:
           - hst:pages/project-update
           - hst:pages/sign-up
           - hst:pages/video
+          - hst:pages/policy-page
+          - hst:pages/corporatepolicy
           hst:relativecontentpath: ${parent}/content
           jcr:primaryType: hst:sitemapitem
         /root:
@@ -132,6 +136,8 @@ definitions:
         - website:projectupdate
         - website:signup
         - website:video
+        - website:policypage
+        - website:corporatepolicy
         hst:componentconfigurationmappingvalues:
         - hst:pages/service
         - hst:pages/general
@@ -172,6 +178,8 @@ definitions:
         - hst:pages/project-update
         - hst:pages/sign-up
         - hst:pages/video
+        - hst:pages/policy-page
+        - hst:pages/corporatepolicy
         hst:relativecontentpath: ${1}
         jcr:primaryType: hst:sitemapitem
       /about:
@@ -336,6 +344,35 @@ definitions:
         jcr:primaryType: hst:sitemapitem
       /developer:
         /api-catalogue:
+          /_any_:
+            /_index_:
+              hst:cacheable: true
+              hst:componentconfigurationmappingnames:
+              - website:service
+              - website:general
+              - website:componentlist
+              - website:apispecification
+              hst:componentconfigurationmappingvalues:
+              - hst:pages/service
+              - hst:pages/general
+              - hst:pages/componentlist
+              - hst:pages/apispecification
+              hst:relativecontentpath: ${parent}/content
+              jcr:primaryType: hst:sitemapitem
+            hst:cacheable: true
+            hst:componentconfigurationid: hst:pages/404
+            hst:componentconfigurationmappingnames:
+            - website:service
+            - website:general
+            - website:componentlist
+            - website:apispecification
+            hst:componentconfigurationmappingvalues:
+            - hst:pages/service
+            - hst:pages/general
+            - hst:pages/componentlist
+            - hst:pages/apispecification
+            hst:relativecontentpath: ${parent}/${1}
+            jcr:primaryType: hst:sitemapitem
           /_any_.trythisapi:
             hst:componentconfigurationid: hst:pages/apitryitnow
             hst:relativecontentpath: ${parent}/${1}/content
@@ -344,6 +381,7 @@ definitions:
             hst:componentconfigurationid: hst:pages/api-catalogue
             hst:relativecontentpath: ${parent}/content
             jcr:primaryType: hst:sitemapitem
+          hst:cacheable: false
           hst:relativecontentpath: developer/api-catalogue
           jcr:primaryType: hst:sitemapitem
         hst:componentconfigurationid: hst:pages/nhsd-developer-hub
@@ -354,6 +392,10 @@ definitions:
           hst:componentconfigurationid: hst:pages/404
           hst:refId: pagenotfound
           jcr:primaryType: hst:sitemapitem
+        jcr:primaryType: hst:sitemapitem
+      /events:
+        hst:componentconfigurationid: hst:pages/latestevents
+        hst:relativecontentpath: events
         jcr:primaryType: hst:sitemapitem
       /forms:
         /_any_:
@@ -421,20 +463,20 @@ definitions:
             jcr:primaryType: hst:sitemapitem
           hst:componentconfigurationid: hst:pages/latestevents
           jcr:primaryType: hst:sitemapitem
-        /news:
+        /feed:
           /_any_:
             hst:componentconfigurationid: hst:pages/news
-            hst:relativecontentpath: news-and-events/latest-news
+            hst:relativecontentpath: news/latest-news
             jcr:primaryType: hst:sitemapitem
           /year:
             /_any_:
               hst:componentconfigurationid: hst:pages/latestnews
-              hst:relativecontentpath: faceted-news/year/${1}
+              hst:relativecontentpath: feed/year/${1}
               jcr:primaryType: hst:sitemapitem
             hst:componentconfigurationid: hst:pages/404
             jcr:primaryType: hst:sitemapitem
           hst:componentconfigurationid: hst:pages/latestnews
-          hst:relativecontentpath: faceted-news
+          hst:relativecontentpath: feed
           jcr:primaryType: hst:sitemapitem
         hst:componentconfigurationmappingnames:
         - website:hub

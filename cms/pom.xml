@@ -27,13 +27,19 @@
         <dependency>
             <groupId>com.onehippo.cms7</groupId>
             <artifactId>hippo-addon-content-feed-dependencies-cms</artifactId>
-            <version>${bloomreach.version}</version>
+            <version>${hippo.addon-content-feed.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.onehippo.cms7</groupId>
             <artifactId>hippo-package-cms-dependencies</artifactId>
             <type>pom</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.onehippo.cms7</groupId>
+                    <artifactId>xm-spring-boot-integration</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.onehippo.cms7</groupId>
@@ -89,7 +95,32 @@
                     <groupId>javax.mail</groupId>
                     <artifactId>mailapi</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.sun.mail</groupId>
+                    <artifactId>mailapi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.datatype</groupId>
+                    <artifactId>jackson-datatype-jsr310</artifactId>
+                </exclusion>
+
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.jknack</groupId>
@@ -98,11 +129,6 @@
         <dependency>
             <groupId>com.warrenstrange</groupId>
             <artifactId>googleauth</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.splunk.logging</groupId>
-            <artifactId>splunk-library-javalogging</artifactId>
-            <version>1.9.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -317,7 +343,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.atlassian.commonmark</groupId>
+            <groupId>org.commonmark</groupId>
             <artifactId>commonmark-ext-gfm-tables</artifactId>
         </dependency>
 
@@ -357,6 +383,10 @@
         <dependency>
             <groupId>org.onehippo.cms7.hst.client-modules</groupId>
             <artifactId>hst-google-analytics-repository</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>uk.nhs.digital</groupId>
+            <artifactId>website-toolbox</artifactId>
         </dependency>
     </dependencies>
     <build>

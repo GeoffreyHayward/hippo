@@ -9,7 +9,7 @@
 <#include "macro/latestblogs.ftl">
 <#include "macro/personitem.ftl">
 <#include "macro/contentPixel.ftl">
-<#include "macro/shareThisPage.ftl">
+<#include "macro/heroes/hero.ftl">
 
 <#-- Add meta tags -->
 <@metaTags></@metaTags>
@@ -35,180 +35,125 @@
 <@contentPixel document.getCanonicalUUID() document.title></@contentPixel>
 
 <article itemscope itemtype="http://schema.org/BlogPosting">
+	<#-- Use UTF-8 charset for URL escaping from now: -->
+    <#setting url_escaping_charset="UTF-8">
 
-    <#if !document.headertype?has_content || document.headertype == "Cube header"  >
-        <div class="nhsd-o-hero nhsd-!t-bg-bright-blue-20-tint nhsd-!t-bg-pale-grey nhsd-!t-margin-bottom-6">
-            <div class="nhsd-t-grid nhsd-!t-no-gutters ">
-                <div class="nhsd-t-row ">
-                    <div class="nhsd-t-col-xs-12 nhsd-t-col-s-8 nhsd-!t-no-gutters">
-                        <div class="nhsd-o-hero__content-box  nhsd-o-hero__content-box--left-align">
-                            <div class="nhsd-o-hero__content">
+    <#--  Facebook  -->
+    <#assign facebookUrl = "http://www.facebook.com/sharer.php?u=${currentUrl?url}"/>
+    <#assign facebookIconPath = "/images/icon/rebrand-facebook.svg" />
 
-                                <span class="nhsd-a-tag nhsd-a-tag--phase">Blog</span>
+    <#--  Twitter  -->
+    <#assign hashtags ='' />
+    <#if hasTwitterHashtag>
+        <#list document.twitterHashtag as tag>
+            <#if tag?starts_with("#")>
+                <#assign hashtags = hashtags + tag?keep_after('#') + ','>
+            <#else>
+                <#assign hashtags = hashtags + tag + ','>
+            </#if>
+        </#list>
+    </#if>
+    <#assign twitterUrl = "https://twitter.com/intent/tweet?via=nhsdigital&url=${currentUrl?url}&text=${document.title?url}&hashtags=${hashtags?url}"/>
+    <#assign twitterIconPath = "/images/icon/rebrand-twitter.svg" />
 
-                                <#if document.title?has_content>
-                                <span class="nhsd-t-heading-xl nhsd-!t-margin-top-3" data-uipath="document.title">${document.title}</span>
-                                </#if>
+    <#--  LinkedIn  -->
+    <#assign linkedInUrl = "http://www.linkedin.com/shareArticle?mini=true&url=${currentUrl?url}&title=${document.title?url}&summary=${document.shortsummary?url}"/>
+    <#assign linkedInIconPath = "/images/icon/rebrand-linkedin.svg" />
 
-                                <#if document.shortsummary?has_content>
-                                <p class="nhsd-t-heading-s nhsd-!t-margin-bottom-6" data-uipath="website.blog.shortsummary">${document.shortsummary}</p>
-                                </#if>
+    <#--  YouTube  -->
+    <#assign youTubeUrl = "http://www.youtube.com/watch?v=${currentUrl?url}"/>
+    <#assign youTubeIconPath = "/images/icon/rebrand-youtube.svg" />
 
-                                <div class="nhsd-o-hero__meta-data nhsd-!t-margin-bottom-6">
-                                    <#if hasAuthors>
-                                        <div class="nhsd-o-hero__meta-data-item">
-                                            <div class="nhsd-o-hero__meta-data-item-title">Author<#if document.authors?size gt 1 >s</#if>: </div>
-
-                                            <div class="nhsd-t-grid nhsd-!t-no-gutters">
-                                                <#list document.authors as author>
-                                                    <div class="nhsd-t-row">
-                                                        <div class="nhsd-t-col-12 nhsd-!t-no-gutters">
-                                                            <@hst.link hippobean=author var="authorLink"/>
-                                                            <div class="nhsd-o-hero__meta-data-item-description">
-                                                                <a class="nhsd-a-link"
-                                                                   href="${authorLink}"
-                                                                   onClick="${getOnClickMethodCall(document.class.name, authorLink)}"
-                                                                >
-                                                                    ${author.title}<span class="nhsd-t-sr-only"></span>
-                                                                </a>
-                                                                <#if author.roles??><#if author.roles.primaryroles?has_content>, ${author.roles.firstprimaryrole}</#if></#if><#if author.roles??><#if author.roles.primaryroleorg?has_content>, ${author.roles.primaryroleorg}</#if></#if>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </#list>
-                                            </div>
-                                        </div>
-                                    <#elseif document.authorName?has_content>
-                                        <div class="nhsd-o-hero__meta-data-item">
-                                            <div class="nhsd-o-hero__meta-data-item-title">Author: </div>
-                                            <div class="nhsd-o-hero__meta-data-item-description">
-                                                ${document.authorName}<#if document.authorJobTitle?has_content>, ${document.authorJobTitle}</#if><#if document.authororganisation?has_content>, ${document.authororganisation}</#if>
-                                            </div>
-                                        </div>
-                                    </#if>
-                                    <#if document.dateOfPublication.time?has_content>
-                                        <div class="nhsd-o-hero__meta-data-item">
-                                            <div class="nhsd-o-hero__meta-data-item-title">Date: </div>
-                                            <div class="nhsd-o-hero__meta-data-item-description" data-uipath="website.blog.dateofpublication"><@fmt.formatDate value=document.dateOfPublication.time type="Date" pattern="d MMMM yyyy" timeZone="${getTimeZone()}" /></div>
-                                        </div>
-                                    </#if>
-
-                                    <#if hasTopics>
-                                        <div class="nhsd-o-hero__meta-data-item">
-                                            <div class="nhsd-o-hero__meta-data-item-title">Topic<#if document.topics?size gt 1 >s</#if>: </div>
-                                            <div class="nhsd-o-hero__meta-data-item-description" itemprop="keywords" data-uipath="website.blog.topics"><#list document.topics as tag>${tag}<#sep>, </#list></div>
-                                        </div>
-                                    </#if>
-
-                                    <#if hasBlogCategories>
-                                        <div class="nhsd-o-hero__meta-data-item">
-                                            <div class="nhsd-o-hero__meta-data-item-title">Categories: </div>
-                                            <div class="nhsd-o-hero__meta-data-item-description" itemprop="keywords" data-uipath="website.blog.categories"><#list document.caseStudyCategories as category>${category}<#sep>, </#list></div>
-                                        </div>
-                                    </#if>
-                                </div>
-                            </div>
-                        </div>
+    <#assign metaData = [] />
+    <#if hasAuthors>
+        <#assign authorValue>
+            <div class="nhsd-!t-margin-bottom-1">
+                <#list document.authors as author>
+                    <@hst.link hippobean=author var="authorLink" />
+                    <div>
+                        <a class="nhsd-a-link"
+                           href="${authorLink}"
+                           onClick="${getOnClickMethodCall(document.class.name, authorLink)}"
+                        >
+                            ${author.title}
+                        </a>
+                        <#if author.roles??>
+                            <#if author.roles.primaryroles?has_content>, ${author.roles.firstprimaryrole}</#if><#if author.roles.primaryroleorg?has_content>, ${author.roles.primaryroleorg}</#if>
+                        </#if>
                     </div>
-                </div>
+                </#list>
             </div>
-            <div class="nhsd-a-digiblocks nhsd-a-digiblocks--pos-tr">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 550 550"><g><g transform="translate(222, 224)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#BFD7ED"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#B2CFEA"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#A6C7E6"></polygon></g><g transform="translate(328.5, 367.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#FBFAFA"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#F5F5F4"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#EFF2F1"></polygon></g><g transform="translate(151, 306)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#3C4D57"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#32434C"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#313D45"></polygon></g><g transform="translate(80, 306)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#FBFAFA"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#F5F5F4"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#EFF2F1"></polygon></g></g><g><g transform="translate(186.5, 203.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#FBFAFA"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#F5F5F4"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#EFF2F1"></polygon></g><g transform="translate(186.5, 285.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#00267A"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#001F75"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#001766"></polygon></g><g transform="translate(222, 306)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#00267A"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#001F75"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#001766"></polygon></g><g transform="translate(9, 306)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#00267A"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#001F75"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#001766"></polygon></g><g transform="translate(257.5, 449.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#F5D507"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#F2CB0C"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#EEC000"></polygon></g></g><g><g transform="translate(186.5, 203.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#6D7B86"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#62717A"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#5C6B75"></polygon></g><g transform="translate(399.5, 326.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#BFD7ED"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#B2CFEA"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#A6C7E6"></polygon></g><g transform="translate(222, 306)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#FBFAFA"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#F5F5F4"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#EFF2F1"></polygon></g></g><g><g transform="translate(328.5, 162.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#F5D507"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#F2CB0C"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#EEC000"></polygon></g><g transform="translate(399.5, 244.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#00267A"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#001F75"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#001766"></polygon></g><g transform="translate(115.5, 162.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#6D7B86"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#62717A"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#5C6B75"></polygon></g><g transform="translate(186.5, 244.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#0062CC"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#005ABE"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#0050B5"></polygon></g><g transform="translate(328.5, 326.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#0062CC"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#005ABE"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#0050B5"></polygon></g><g transform="translate(257.5, 326.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#3C4D57"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#32434C"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#313D45"></polygon></g></g><g><g transform="translate(328.5, 244.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#DADFDF"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#CDD5D6"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#C5CDCF"></polygon></g><g transform="translate(257.5, 285.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#0062CC"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#005ABE"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#0050B5"></polygon></g><g transform="translate(44.5, 203.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#6D7B86"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#62717A"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#5C6B75"></polygon></g><g transform="translate(151, 265)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#BFD7ED"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#B2CFEA"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#A6C7E6"></polygon></g></g><g><g transform="translate(435, 142)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#0062CC"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#005ABE"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#0050B5"></polygon></g></g><g><g transform="translate(328.5, 39.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#BFD7ED"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#B2CFEA"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#A6C7E6"></polygon></g><g transform="translate(222, 19)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#00267A"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#001F75"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#001766"></polygon></g><g transform="translate(257.5, 80.5)"><polygon points="0,20.5 35.5,0 71,20.5 35.5,41" fill="#DADFDF"></polygon><polygon points="35.5,82 71,61.4 71,20.5 35.5,41" fill="#CDD5D6"></polygon><polygon points="0,20.5 0,61.4 35.5,82 35.5,41" fill="#C5CDCF"></polygon></g></g></svg>
-            </div>
-        </div>
-    <#else>
-        <div class="nhsd-o-hero nhsd-!t-bg-pale-grey nhsd-!t-text-align-center nhsd-o-hero--background-image nhsd-!t-margin-bottom-6">
-            <div class="nhsd-t-grid nhsd-!t-no-gutters  nhsd-t-grid--full-width">
-                <div class="nhsd-t-row nhsd-t-row--centred">
-                    <div class="nhsd-t-col-xs-12 nhsd-t-col-s-8 nhsd-t-col-l-6 nhsd-!t-no-gutters">
-                        <div class="nhsd-o-hero__content-box ">
-                            <div class="nhsd-o-hero__content">
-
-                                <span class="nhsd-a-tag nhsd-a-tag--phase">Blog</span>
-
-                                <#if document.title?has_content>
-                                    <span class="nhsd-t-heading-xl nhsd-!t-margin-up-3">${document.title}</span>
-                                </#if>
-
-                                <#if document.summary?has_content>
-                                <p class="nhsd-t-heading-s nhsd-!t-margin-bottom-6">${document.shortsummary}</p>
-                                </#if>
-
-                                <div class="nhsd-o-hero__meta-data nhsd-!t-margin-bottom-6">
-                                    <#if hasAuthors>
-                                        <div class="nhsd-o-hero__meta-data-item">
-                                            <div class="nhsd-o-hero__meta-data-item-title">Author<#if document.authors?size gt 1 >s</#if>: </div>
-                                            <div class="nhsd-t-grid nhsd-!t-no-gutters">
-                                                <#list document.authors as author>
-                                                    <div class="nhsd-t-row">
-                                                        <div class="nhsd-t-col-12 nhsd-!t-no-gutters">
-                                                            <@hst.link hippobean=author var="authorLink"/>
-                                                            <div class="nhsd-o-hero__meta-data-item-description">
-                                                                <a class="nhsd-a-link"
-                                                                   href="${authorLink}"
-                                                                   onClick="${getOnClickMethodCall(document.class.name, authorLink)}"
-                                                                >
-                                                                    ${author.title}
-                                                                    <span class="nhsd-t-sr-only"></span>
-                                                                </a>
-                                                                <#if author.roles??><#if author.roles.primaryroles?has_content>, ${author.roles.firstprimaryrole}</#if></#if><#if author.roles??><#if author.roles.primaryroleorg?has_content>, ${author.roles.primaryroleorg}</#if></#if>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </#list>
-                                            </div>
-                                        </div>
-                                    <#elseif document.authorName?has_content>
-                                        <div class="nhsd-o-hero__meta-data-item">
-                                            <div class="nhsd-o-hero__meta-data-item-title">Author: </div>
-                                            <div class="nhsd-o-hero__meta-data-item-description">
-                                                ${document.authorName}<#if document.authorJobTitle?has_content>, ${document.authorJobTitle}</#if><#if document.authororganisation?has_content>, ${document.authororganisation}</#if>
-                                            </div>
-                                        </div>
-                                    </#if>
-
-                                    <#if document.dateOfPublication.time?has_content >
-                                        <div class="nhsd-o-hero__meta-data-item">
-                                            <div class="nhsd-o-hero__meta-data-item-title">Date: </div>
-                                            <div class="nhsd-o-hero__meta-data-item-description"><@fmt.formatDate value=document.dateOfPublication.time type="Date" pattern="d MMMM yyyy" timeZone="${getTimeZone()}" /></div>
-                                        </div>
-                                    </#if>
-
-                                    <#if hasTopics>
-                                        <div class="nhsd-o-hero__meta-data-item">
-                                            <div class="nhsd-o-hero__meta-data-item-title">Topic<#if document.topics?size gt 1 >s</#if>: </div>
-                                            <div class="nhsd-o-hero__meta-data-item-description" itemprop="keywords" data-uipath="website.blog.topics"><#list document.topics as tag>${tag}<#sep>, </#list></div>
-                                        </div>
-                                    </#if>
-
-                                    <#if hasBlogCategories>
-                                        <div class="nhsd-o-hero__meta-data-item">
-                                            <div class="nhsd-o-hero__meta-data-item-title">Categories: </div>
-                                            <div class="nhsd-o-hero__meta-data-item-description" itemprop="keywords" data-uipath="website.blog.categories"><#list document.caseStudyCategories as category>${category}<#sep>, </#list></div>
-                                        </div>
-                                    </#if>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="nhsd-o-hero__background-image">
-                <figure class="nhsd-a-image nhsd-a-image--cover" aria-hidden="true">
-                    <picture class="nhsd-a-image__picture ">
-                        <@hst.link hippobean=document.leadImage.pageHeaderHeroModule2x fullyQualified=true var="bannerImage" />
-                        <img src="${bannerImage}" alt="<#if hasLeadImageAltText>${document.leadImageAltText}</#if>">
-                    </picture>
-                </figure>
-            </div>
-        </div>
+        </#assign>
+        <#assign metaData += [{
+            "title": "Author${(document.authors?size gt 1)?then('s', '')}",
+            "value": authorValue
+        }] />
+    <#elseif document.authorName?has_content>
+        <#assign authorValue>
+            ${document.authorName}<#if document.authorJobTitle?has_content>, ${document.authorJobTitle}</#if><#if document.authororganisation?has_content>, ${document.authororganisation}</#if>
+        </#assign>
+        <#assign metaData += [{
+            "title": "Author",
+            "value": authorValue
+        }] />
+    </#if>
+    <#if document.dateOfPublication.time?has_content>
+        <@fmt.formatDate value=document.dateOfPublication.time type="Date" pattern="d MMMM yyyy" timeZone="${getTimeZone()}" var="dateOfPublication" />
+        <#assign metaData += [{
+            "title": "Date",
+            "value": dateOfPublication
+        }] />
+    </#if>
+    <#if hasTopics>
+        <#assign topics>
+            <#list document.topics as tag>${tag}<#sep>, </#list>
+        </#assign>
+        <#assign metaData += [{
+            "title": "Topic${(document.topics?size gt 1)?then('s','')}",
+            "value": topics
+        }] />
+    </#if>
+    <#if hasBlogCategories>
+        <#assign categories>
+            <#list document.caseStudyCategories as category>${category}<#sep>, </#list>
+        </#assign>
+        <#assign metaData += [{
+            "title": "Categories",
+            "value": categories
+        }] />
     </#if>
 
-    <div class="nhsd-t-grid " aria-label="document-content">
+    <@hst.link hippobean=document.leadImage.pageHeaderHeroModule2x fullyQualified=true var="bannerImage" />
+    <#assign heroOptions = {
+        "introTags": ["Blog"],
+        "title": document.title,
+        "summary": document.shortsummary,
+        "metaData": metaData,
+        "uiPath": "website.blog"
+    } />
+
+    <#if document.leadImage?has_content>
+        <@hst.link hippobean=document.leadImage.pageHeaderHeroModule2x fullyQualified=true var="bannerImage" />
+        <#assign heroOptions += {
+            "image": {
+                "src": bannerImage,
+                "alt": document.leadImageAltText
+            }
+        }/>
+    </#if>
+
+    <#assign heroType = "default" />
+    <#if document.headertype?has_content && document.headertype == "Image header" && document.leadImage?has_content>
+        <#assign heroType = "backgroundImage" />
+    </#if>
+    <@hero heroOptions heroType/>
+
+    <div itemprop="articleBody">
+    <div class="nhsd-t-grid nhsd-!t-margin-top-8">
         <div class="nhsd-t-row">
             <div class="nhsd-t-col-xs-12 nhsd-t-col-s-8">
                 <#if hasLeadParagraph>
-                    <div class="nhsd-t-heading-xs" itemprop="articleBody" data-uipath="website.blog.leadparagraph">
+                    <div class="nhsd-t-heading-xs" data-uipath="website.blog.leadparagraph">
                         <@hst.html hippohtml=document.leadParagraph contentRewriter=brContentRewriter/>
                     </div>
                 </#if>
@@ -237,23 +182,14 @@
                 </#if>
 
                 <#if hasSectionContent>
-                    <#if !hasLeadImage>
-                        <hr class="nhsd-a-horizontal-rule" />
-                    </#if>
-                    <div itemprop="articleBody">
-                        <@sections document.sections></@sections>
-                    </div>
+                    <@sections document.sections></@sections>
+                    <hr class="nhsd-a-horizontal-rule" />
                 </#if>
 
                 <#if hasBackstory>
-                    <#if hasSectionContent>
-                        <hr class="nhsd-a-horizontal-rule" />
-                    </#if>
-                    <div itemprop="articleBody">
-                        <div class="nhsd-a-box nhsd-a-box--bg-light-blue nhsd-!t-margin-bottom-6"">
-                            <p class="nhsd-t-heading-m">Back story</p>
-                            <div data-uipath="website.blog.backstory"><@hst.html hippohtml=document.backstory contentRewriter=brContentRewriter /></div>
-                        </div>
+                    <div class="nhsd-a-box nhsd-a-box--bg-light-blue nhsd-!t-margin-bottom-6">
+                        <p class="nhsd-t-heading-m">Back story</p>
+                        <div data-uipath="website.blog.backstory"><@hst.html hippohtml=document.backstory contentRewriter=brContentRewriter /></div>
                     </div>
                 </#if>
 
@@ -298,42 +234,9 @@
                     </div>
                 </#if>
 
-                <div class="nhsd-!t-margin-bottom-6" itemprop="articleBody">
-                    <#if hasRelatedSubjects || hasSectionContent && !hasBackstory && !hasContactDetails && !hasRelatedSubjects>
-                        <hr class="nhsd-a-horizontal-rule" />
-                    </#if>
-                    <p class="nhsd-t-heading-xl">Share this page</p>
-                    <#-- Use UTF-8 charset for URL escaping from now: -->
-                    <#setting url_escaping_charset="UTF-8">
-
-                    <div class="nhsd-t-grid nhsd-!t-margin-bottom-4 nhsd-!t-no-gutters">
-
-                        <#--  Facebook  -->
-                        <#assign facebookUrl = "http://www.facebook.com/sharer.php?u=${currentUrl?url}"/>
-                        <#assign facebookIconPath = "/images/icon/rebrand-facebook.svg" />
-                        <@shareThisPage document "Facebook" facebookUrl facebookIconPath/>
-
-
-                        <#--  Twitter  -->
-                        <#assign hashtags ='' />
-                        <#if hasTwitterHashtag>
-                            <#list document.twitterHashtag as tag>
-                                <#if tag?starts_with("#")>
-                                    <#assign hashtags = hashtags + tag?keep_after('#') + ','>
-                                <#else>
-                                    <#assign hashtags = hashtags + tag + ','>
-                                </#if>
-                            </#list>
-                        </#if>
-                        <#assign twitterUrl = "https://twitter.com/intent/tweet?via=nhsdigital&url=${currentUrl?url}&text=${document.title?url}&hashtags=${hashtags?url}"/>
-                        <#assign twitterIconPath = "/images/icon/rebrand-twitter.svg" />
-                        <@shareThisPage document "Twitter" twitterUrl twitterIconPath/>
-
-                        <#--  LinkedIn  -->
-                        <#assign linkedInUrl = "http://www.linkedin.com/shareArticle?mini=true&url=${currentUrl?url}&title=${document.title?url}&summary=${document.shortsummary?url}"/>
-                        <#assign linkedInIconPath = "/images/icon/rebrand-linkedin.svg" />
-                        <@shareThisPage document "LinkedIn" linkedInUrl linkedInIconPath/>
-                    </div>
+                <div class="nhsd-!t-margin-bottom-6">
+                    <@shareSection document />
+                    <hr class="nhsd-a-horizontal-rule" />
                 </div>
 
                 <#if hasAuthors>
@@ -404,5 +307,6 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </article>

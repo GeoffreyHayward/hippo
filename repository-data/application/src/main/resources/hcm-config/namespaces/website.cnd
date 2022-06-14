@@ -7,6 +7,9 @@
 <'hippotaxonomy'='http://www.hippoecm.org/hippotaxonomy/nt/1.2'>
 <'hippogallery'='http://www.onehippo.org/jcr/hippogallery/nt/2.0'>
 
+[website:ImageModule] > hippo:compound, hippostd:relaxed
+  orderable
+
 [website:basedocument] > hippo:document, hippostd:publishableSummary, hippostdpubwf:document
   orderable
   - common:searchable (boolean) = 'true' autocreated
@@ -15,6 +18,9 @@
   orderable
 
 [website:video] > hippostd:relaxed, hippostd:taggable, hippotranslation:translated, website:basedocument
+  orderable
+
+[website:VideoSection] > hippo:compound, hippostd:relaxed
   orderable
 
 [website:aboutapi] > hippo:compound, hippostd:relaxed
@@ -481,4 +487,34 @@
   orderable
 
 [website:copy] > hippostd:relaxed, hippotranslation:translated, website:basedocument
+  orderable
+
+[website:pubstylesection] > hippo:compound, hippostd:relaxed
+   orderable
+
+[website:highlightsection] > hippo:compound, hippostd:relaxed
+   orderable
+
+[website:corporatepolicy] > hippostd:relaxed, hippotranslation:translated, website:basedocument
+   orderable
+
+[website:acknowledgementsection] > hippo:compound, hippostd:relaxed
+   orderable
+
+[website:policypage] > hippostd:relaxed, hippotranslation:translated, website:basedocument
+  orderable
+
+[website:pubstylepolicypage] > hippo:compound, hippostd:relaxed
+  orderable
+
+[website:Odsimport] > hippostd:relaxed, hippotranslation:translated, website:basedocument
+  orderable
+
+[website:quotehero] > hippostd:relaxed, hippotranslation:translated, website:basedocument
+  orderable
+
+[website:calltoactionrich] > hippostd:relaxed, hippotranslation:translated, website:basedocument
+  orderable
+
+[website:seoSummary] > hippostd:relaxed, hippotranslation:translated, website:basedocument
   orderable

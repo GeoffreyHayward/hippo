@@ -18,10 +18,14 @@
             </div>
         </div>
     </div>
-    <#if !hstRequest.requestContext.cmsRequest>
+    <#if !hstRequest.requestContext.cmsRequest??>
         <@ga.accountId/>
         <@hst.link var="googleAnalytics" path="/resources/google-analytics.js"/>
-        <script type="text/plain" data-cookieconsent="statistics" src="${googleAnalytics}"></script>
+        <script data-cookieconsent="statistics" src="${googleAnalytics}"></script>
+
+        <#-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W6GJCR9" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <#-- End Google Tag Manager (noscript) -->
     </#if>
 </footer>
 

@@ -15,16 +15,15 @@ import org.hippoecm.hst.core.linking.HstLink;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.repository.util.DateTools;
 import org.jdom2.Element;
-import org.jdom2.Namespace;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.nhs.digital.ps.beans.Publication;
+import uk.nhs.digital.ps.beans.Series;
 import uk.nhs.digital.website.beans.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Session;
@@ -186,7 +185,16 @@ public class RssModifier extends RSS20Modifier {
             foreignMarkup.add(getElement("author", (emailAddress + " (" + author + ")")));
             StringBuilder content = new StringBuilder();
             for (HippoBean sre : newsBean.getSections()) {
-                String tempContent = ((Section) sre).getHtmlJson();
+                String tempContent = new String();
+                if (sre instanceof Section) {
+                    tempContent = ((Section) sre).getHtmlJson();
+                } else if (sre instanceof EmphasisBox) {
+                    tempContent = ((EmphasisBox) sre).getBodyJson();
+                } else if (sre instanceof Expander) {
+                    tempContent = ((Expander) sre).getContent().getContent();
+                } else if (sre instanceof Quote) {
+                    tempContent = ((Quote) sre).getQuote().getContent();
+                }
                 content.append(tempContent);
             }
             foreignMarkup.add(getElement("description", content.toString()));
@@ -286,10 +294,8 @@ public class RssModifier extends RSS20Modifier {
 
     @NotNull
     private Element getImageElement(String imageUrl) {
-        String type = imageUrl.substring(imageUrl.lastIndexOf(".") + 1);
         final Element element
-            = new Element("content", Namespace.getNamespace("http://search.yahoo.com/mrss/"));
-        element.setAttribute("type", "image/" + type);
+            = new Element("thumbnail", "media", "http://search.yahoo.com/mrss/");
         element.setAttribute("url", imageUrl);
         return element;
     }
@@ -320,25 +326,30 @@ public class RssModifier extends RSS20Modifier {
     }
 
     private String getCategory(Publication publicationBean) {
-        StringBuilder category = new StringBuilder();
-        try {
-            if (publicationBean.getFullTaxonomyList() != null && publicationBean.getFullTaxonomyList().size() > 0) {
-
-                category.append(Arrays.toString(publicationBean.getFullTaxonomyList().toArray()));
+        HippoBean parentDocument = publicationBean.getParentDocument();
+        if (parentDocument instanceof Series) {
+            Series series = (Series) parentDocument;
+            StringBuilder category = new StringBuilder();
+            try {
+                if (series.getFullTaxonomyList() != null && series.getFullTaxonomyList().size() > 0) {
+                    category.append(Arrays.toString(series.getFullTaxonomyList().toArray()));
+                }
+            } catch (Exception ex) {
+                LOGGER.warn(" Failed to get the Full Taxonomy.", ex.getMessage());
             }
-        } catch (Exception ex) {
-            LOGGER.warn(" Failed to get the Full Taxonomy.", ex.getMessage());
+            if (series.getInformationType() != null && series.getInformationType().length > 0) {
+                category.append(Arrays.toString(series.getInformationType()));
+            }
+            if (series.getGranularity() != null && series.getGranularity().length > 0) {
+                category.append(Arrays.toString(series.getGranularity()));
+            }
+            if (series.getGeographicCoverage() != null && series.getGeographicCoverage().length > 0) {
+                category.append(Arrays.toString(Arrays.stream(series.getGeographicCoverage()).toArray()));
+            }
+            return category.toString();
+        } else {
+            return "";
         }
-        if (publicationBean.getInformationType() != null && publicationBean.getInformationType().length > 0) {
-            category.append(Arrays.toString(publicationBean.getInformationType()));
-        }
-        if (publicationBean.getGranularity() != null && publicationBean.getGranularity().length > 0) {
-            category.append(Arrays.toString(publicationBean.getGranularity()));
-        }
-        if (publicationBean.getGeographicCoverage() != null && publicationBean.getGeographicCoverage().length > 0) {
-            category.append(Arrays.toString(Arrays.stream(publicationBean.getGeographicCoverage()).toArray()));
-        }
-        return category.toString();
     }
 
     @NotNull

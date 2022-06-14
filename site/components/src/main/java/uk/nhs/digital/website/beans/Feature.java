@@ -24,7 +24,17 @@ public class Feature extends CaseStudyAndBlogBase implements IntranetSearchResul
         return SearchResultType.NEWS.getValue();
     }
 
+    @HippoEssentialsGenerated(internalName = "website:headertype")
+    public String getHeadertype() {
+        return getSingleProperty("website:headertype");
+    }
+
     public String getDocType() {
         return "Feature";
+    }
+
+    @HippoEssentialsGenerated(internalName = "website:thumbnailimage")
+    public CorporateWebsiteImageset getThumbnailImage() {
+        return getLinkedBean("website:thumbnailimage", CorporateWebsiteImageset.class);
     }
 }

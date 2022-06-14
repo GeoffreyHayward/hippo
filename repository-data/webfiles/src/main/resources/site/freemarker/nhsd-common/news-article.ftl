@@ -1,4 +1,6 @@
 <#ftl output_format="HTML">
+<#setting url_escaping_charset="UTF-8">
+
 <#-- @ftlvariable name="document" type="uk.nhs.digital.website.beans.News" -->
 <#include "../include/imports.ftl">
 <#include "macro/metaTags.ftl">
@@ -8,11 +10,11 @@
 <#include "macro/component/lastModified.ftl">
 <#include "macro/component/downloadBlockInternal.ftl">
 <#include "macro/contactdetail.ftl">
-<#include "macro/headerMetadata.ftl">
-<#include "macro/documentHeader.ftl">
+<#include "macro/heroes/hero-options.ftl">
+<#include "macro/heroes/hero.ftl">
 <#include "macro/contentPixel.ftl">
 <#include "macro/latestblogs.ftl">
-<#include "macro/shareThisPage.ftl">
+<#include "macro/shareSection.ftl">
 
 <#-- Add meta tags -->
 <@metaTags></@metaTags>
@@ -34,46 +36,49 @@
 <#assign hasTwitterHashtag = document.twitterHashtag?? && document.twitterHashtag?has_content />
 <#assign idsuffix = slugify(document.title) />
 
-<#assign metadata = [
-  {
-   "key": "Date",
-   "value": document.publisheddatetime.time,
-   "uipath": "website.news.dateofpublication",
-   "type": "date",
+
+<#assign heroOptions = getHeroOptions(document)/>
+<#assign heroOptions += {
+    "colour": "darkBlue",
+    "introText": "News"
+}/>
+
+<@fmt.formatDate value=document.publisheddatetime.time type="Date" pattern="d MMMM yyyy" timeZone="${getTimeZone()}" var="date" />
+<#assign metadata = [{
+   "title": "Date",
+   "value": date,
    "schemaOrgTag": "datePublished"
-  }
-] />
+  }] />
 <#if hasTopics>
-  <#assign metadata += [
-    {
-     "key": "Topics",
-     "value": document.topics,
-     "uipath": "website.news.topics",
-     "type": "list",
-     "schemaOrgTag": "keywords"
-    }
-  ] />
+    <#assign metadata += [{
+        "title": "Topics",
+        "value": document.topics,
+        "schemaOrgTag": "keywords"
+    }] />
 </#if>
 <#if hasNewsType>
-  <#assign metadata += [
-    {
-     "key": "News type",
-     "value": newstypes[document.type],
-     "uipath": "website.news.type",
-     "type": "span"
-    }
-  ] />
+    <#assign metadata += [{
+        "title": "News type",
+        "value": newstypes[document.type]
+    }] />
 </#if>
 <#if hasTwitterHashtag>
-  <#assign metadata += [
-    {
-     "key": "Twitter",
-     "value": document.twitterHashtag,
-     "uipath": "website.news.twitter",
-     "type": "twitterHashtag"
-    }
-  ] />
+    <#assign hashTags = []/>
+    <#list document.twitterHashtag as value>
+        <#assign hashTag = value?starts_with("#")?then(value, "#${value}") />
+        <#assign hashTags += [
+            "<a href=\"https://twitter.com/search?q=${hashTag?url}\" class=\"nhsd-a-link nhsd-a-link--col-white\" target=\"blank_\">${hashTag}</a>"
+        ]/>
+    </#list>
+    <#assign metadata += [{
+        "title": "Twitter",
+        "value": hashTags
+    }] />
 </#if>
+
+<#assign heroOptions += {
+    "metaData": metadata
+}/>
 
 <#-- Content Page Pixel -->
 <@contentPixel document.getCanonicalUUID() document.title></@contentPixel>
@@ -90,9 +95,9 @@
         </span>
     </div>
 
-    <@documentHeader document 'news' '' '' document.shortsummary '' true metadata></@documentHeader>
+    <@hero heroOptions />
 
-    <div class="nhsd-t-grid">
+    <div class="nhsd-t-grid nhsd-!t-margin-top-8 nhsd-!t-margin-bottom-6">
         <div class="nhsd-t-row">
             <div class="nhsd-t-col-xs-12 nhsd-t-col-s-8">
 
@@ -148,9 +153,9 @@
                         <hr class="nhsd-a-horizontal-rule" />
                     </#if>
                     <p class="nhsd-t-heading-xl">Related pages</p>
-                    <div class="nhsd-t-grid">
+                    <div class="nhsd-t-grid nhsd-t-grid--nested nhsd-!t-margin-bottom-2">
                         <div class="nhsd-t-row">
-                            <div class="nhsd-t-col">
+                            <div class="nhsd-t-col nhsd-!t-margin-bottom-4">
                                 <#list document.relateddocuments as child>
                                     <@downloadBlockInternal child.class.name child child.title child.shortsummary />
                                 </#list>
@@ -188,36 +193,7 @@
                 </#if>
 
                 <div class="nhsd-!t-margin-bottom-6" itemprop="articleBody">
-                    <h2 class="nhsd-t-heading-xl">Share this page</h2>
-                    <#-- Use UTF-8 charset for URL escaping from now: -->
-                    <#setting url_escaping_charset="UTF-8">
-
-                    <div class="nhsd-t-grid nhsd-!t-margin-bottom-4 nhsd-!t-no-gutters">
-                        <#--  Facebook  -->
-                        <#assign facebookUrl = "http://www.facebook.com/sharer.php?u=${currentUrl?url}"/>
-                        <#assign facebookIconPath = "/images/icon/rebrand-facebook.svg" />
-                        <@shareThisPage document "Facebook" facebookUrl facebookIconPath/>
-
-                        <#--  Twitter  -->
-                        <#assign hashtags ='' />
-                        <#if hasTwitterHashtag>
-                            <#list document.twitterHashtag as tag>
-                                <#if tag?starts_with("#")>
-                                    <#assign hashtags = hashtags + tag?keep_after('#') + ','>
-                                <#else>
-                                    <#assign hashtags = hashtags + tag + ','>
-                                </#if>
-                            </#list>
-                        </#if>
-                        <#assign twitterUrl = "https://twitter.com/intent/tweet?via=nhsdigital&url=${currentUrl?url}&text=${document.title?url}&hashtags=${hashtags?url}"/>
-                        <#assign twitterIconPath = "/images/icon/rebrand-twitter.svg" />
-                        <@shareThisPage document "Twitter" twitterUrl twitterIconPath/>
-
-                        <#--  LinkedIn  -->
-                        <#assign linkedInUrl = "http://www.linkedin.com/shareArticle?mini=true&url=${currentUrl?url}&title=${document.title?url}&summary=${document.shortsummary?url}"/>
-                        <#assign linkedInIconPath = "/images/icon/rebrand-linkedin.svg" />
-                        <@shareThisPage document "LinkedIn" linkedInUrl linkedInIconPath/>
-                    </div>
+                    <@shareSection document />
                 </div>
 
                 <#if hasPeople>
@@ -280,7 +256,8 @@
                 <@contactdetail '' idsuffix rendername renderemail renderphone "Contact us" false></@contactdetail>
 
                 <#if hasLatestNews>
-                    <@latestblogs document.latestNews 'News' 'events-' + idsuffix 'Latest news' />
+                    <@latestblogs document.latestNews 'News' 'news-' + idsuffix 'Latest news' false />
+                    <hr class="nhsd-a-horizontal-rule nhsd-!t-margin-top-0" />
                 </#if>
 
                 <@lastModified document.lastModified false></@lastModified>

@@ -20,22 +20,28 @@
 <#include "tableauLookupSection.ftl">
 <#include "fullWidthImage.ftl">
 <#include "navigation.ftl">
+<#include "videoSection.ftl">
 <#include "../../../common/macro/sections/svgSection.ftl">
 <#include "../component/infoGraphic.ftl">
+<#include "imageModule.ftl">
 
 
 <!-- Set up equation support from mathjax -->
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-AMS_HTML"></script>
 
-<#macro sections sections mainHeadingLevel=2 wrap=false padSections=false>
-
+<#macro sections sections mainHeadingLevel=2 wrap=false padSections=false orgPrompt=false>
     <#assign numberedListCount=0 />
     <#assign isPreviousEmphasisBox = false />
     <#list sections as section>
         <#if wrap>
-        <div >
+        <div>
         </#if>
+            <#-- Add HR if it's not the first section and has a top level heading -->
+            <#if !section?is_first && (section.headingLevel?has_content && section.headingLevel == 'Main heading')>
+                <hr class="nhsd-a-horizontal-rule" />
+            </#if>
             <#if section.sectionType == 'text'>
+                <#if !section?is_first && section.heading?has_content><hr class="nhsd-a-horizontal-rule"/></#if>
                 <@textSection section=section />
             <#elseif section.sectionType == 'website-section'>
                 <#if section.isNumberedList>
@@ -45,6 +51,8 @@
                 <#assign isPreviousEmphasisBox = false />
             <#elseif section.sectionType == 'image'>
                 <@imageSection section=section />
+            <#elseif section.sectionType == 'imageModule'>
+                <@imageModule section=section />
             <#elseif section.sectionType == 'imagePair'>
                 <@imagePairSection section=section />
             <#elseif section.sectionType == 'relatedLink'>
@@ -64,11 +72,11 @@
             <#elseif section.sectionType == 'iconList'>
                 <@iconList section=section isPreviousSectionEmphasisBox=isPreviousEmphasisBox sectionCounter=section?counter/>
             <#elseif section.sectionType == 'gallerySection'>
-                <@gallerySection section=section mainHeadingLevel=mainHeadingLevel />
+                <@gallerySection section=section mainHeadingLevel=mainHeadingLevel orgPrompt=orgPrompt/>
             <#elseif section.sectionType == 'code'>
                 <@codeSection section=section mainHeadingLevel=mainHeadingLevel />
             <#elseif section.sectionType == 'download'>
-                <@downloadSection section=section mainHeadingLevel=mainHeadingLevel />
+                <@downloadSection section=section mainHeadingLevel=mainHeadingLevel orgPrompt=orgPrompt/>
             <#elseif section.sectionType == 'expander'>
                 <@expander section />
             <#elseif section.sectionType == 'ctabutton'>
@@ -89,6 +97,8 @@
                 <@svgSection section=section index=section?index/>
             <#elseif section.sectionType == 'tableau'>
                 <@tableau section=section index=section?index/>
+            <#elseif section.sectionType == 'VideoSection'>
+                <@videoSection section=section/>
             </#if>
         <#if wrap>
         </div>

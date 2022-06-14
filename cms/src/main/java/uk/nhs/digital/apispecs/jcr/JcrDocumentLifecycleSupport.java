@@ -8,9 +8,9 @@ import static uk.nhs.digital.apispecs.jcr.JcrDocumentLifecycleSupport.StandardPr
 import org.hippoecm.repository.api.Document;
 import org.hippoecm.repository.util.WorkflowUtils;
 import org.onehippo.forge.content.exim.core.DocumentManager;
-import uk.nhs.digital.ExceptionUtils;
 import uk.nhs.digital.JcrDocumentUtils;
 import uk.nhs.digital.JcrNodeUtils;
+import uk.nhs.digital.toolbox.exception.ExceptionUtils;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -112,6 +112,10 @@ public class JcrDocumentLifecycleSupport {
 
     public String path() {
         return getNodePathQuietly(documentHandleNode);
+    }
+
+    public String jcrId() {
+        return JcrNodeUtils.getNodeIdQuietly(documentHandleNode);
     }
 
     public void save() {
