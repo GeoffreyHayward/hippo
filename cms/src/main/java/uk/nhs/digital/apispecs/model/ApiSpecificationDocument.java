@@ -25,22 +25,14 @@ public class ApiSpecificationDocument {
         return jcrDocument().path();
     }
 
-    public String getId() {
+    public String specificationId() {
         return jcrDocument().getStringProperty(SPECIFICATION_ID.jcrName, DRAFT)
             .orElseThrow(() -> new RuntimeException("Specification id not available for " + path()))
             ;
     }
 
-    public Optional<String> html() {
-        return jcrDocument().getStringProperty(HTML.jcrName, PUBLISHED);
-    }
-
-    public void setHtmlForPublishing(final String html) {
-        jcrDocument().setStringPropertyWithCheckout(HTML.jcrName, html);
-    }
-
-    public void setHtmlInPlace(final String html) {
-        jcrDocument().setStringPropertyNoCheckout(HTML.jcrName, PUBLISHED, html);
+    public String jcrId() {
+        return jcrDocument().jcrId();
     }
 
     public Optional<String> json() {
@@ -49,14 +41,6 @@ public class ApiSpecificationDocument {
 
     public void setJsonForPublishing(final String specificationJson) {
         jcrDocument().setStringPropertyWithCheckout(JSON.jcrName, specificationJson);
-    }
-
-    public void setLastChangeCheckInstantInPlace(final Instant instant) {
-        jcrDocument().setInstantPropertyNoCheckout(LAST_CHANGE_CHECK_TIME.jcrName, PUBLISHED, instant);
-    }
-
-    public Optional<Instant> lastChangeCheckInstant() {
-        return jcrDocument().getInstantProperty(LAST_CHANGE_CHECK_TIME.jcrName, PUBLISHED);
     }
 
     public Optional<Instant> lastPublicationInstant() {

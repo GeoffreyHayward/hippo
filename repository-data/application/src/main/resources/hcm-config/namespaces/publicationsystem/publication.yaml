@@ -56,6 +56,17 @@ definitions:
             wicket.css:
             - document-title
             wicket.id: ${cluster.id}.left.item
+          /earlyaccesskey:
+            /cluster.options:
+              jcr:primaryType: frontend:pluginconfig
+              maxlength: '64'
+              size: '64'
+            caption: Early access key
+            field: earlyaccesskey
+            hint: ''
+            jcr:primaryType: frontend:plugin
+            plugin.class: uk.nhs.digital.common.earlyaccesskey.EarlyAccessKeyPlugin
+            wicket.id: ${cluster.id}.left.item
           /publicly_accessible:
             /cluster.options:
               falseLabel: UPCOMING (Show in upcoming publications list only)
@@ -85,6 +96,17 @@ definitions:
               edition of the publication shows.
             jcr:primaryType: frontend:plugin
             plugin.class: org.hippoecm.frontend.editor.plugins.field.NodeFieldPlugin
+            wicket.id: ${cluster.id}.left.item
+          /sections:
+            /cluster.options:
+              jcr:primaryType: frontend:pluginconfig
+            caption: Highlights
+            compoundList: website:section,website:ImageModule,website:emphasisBox,website:infographic,website:VideoSections
+            contentPickerType: links
+            field: sections
+            hint: ''
+            jcr:primaryType: frontend:plugin
+            plugin.class: org.onehippo.forge.contentblocks.ContentBlocksFieldPlugin
             wicket.id: ${cluster.id}.left.item
           /CoverageStart:
             /cluster.options:
@@ -297,6 +319,14 @@ definitions:
             hipposysedit:primary: false
             hipposysedit:type: CalendarDate
             jcr:primaryType: hipposysedit:field
+          /earlyaccesskey:
+            hipposysedit:mandatory: false
+            hipposysedit:multiple: false
+            hipposysedit:ordered: false
+            hipposysedit:path: publicationsystem:earlyaccesskey
+            hipposysedit:primary: false
+            hipposysedit:type: String
+            jcr:primaryType: hipposysedit:field
           /html:
             hipposysedit:mandatory: false
             hipposysedit:multiple: false
@@ -362,7 +392,6 @@ definitions:
             hipposysedit:type: CalendarDate
             hipposysedit:validators:
             - required
-            - publicationsystem-publication-date
             jcr:primaryType: hipposysedit:field
           /publicationTier:
             hipposysedit:mandatory: false
@@ -400,13 +429,21 @@ definitions:
             hipposysedit:primary: false
             hipposysedit:type: String
             jcr:primaryType: hipposysedit:field
+          /sections:
+            hipposysedit:multiple: true
+            hipposysedit:ordered: true
+            hipposysedit:path: website:sections
+            hipposysedit:type: hippo:compound
+            hipposysedit:validators:
+            - contentblocks-validator
+            jcr:primaryType: hipposysedit:field
           /seosummary:
             hipposysedit:mandatory: false
             hipposysedit:multiple: false
             hipposysedit:ordered: false
             hipposysedit:path: publicationsystem:seosummary
             hipposysedit:primary: false
-            hipposysedit:type: hippostd:seoSummary
+            hipposysedit:type: website:seoSummary
             jcr:primaryType: hipposysedit:field
           /seosummarytext:
             hipposysedit:mandatory: false
@@ -475,12 +512,6 @@ definitions:
         jcr:primaryType: hippo:handle
       /hipposysedit:prototypes:
         /hipposysedit:prototype:
-          /publicationsystem:KeyFactsHead:
-            hippostd:content: ''
-            jcr:primaryType: hippostd:html
-          /publicationsystem:KeyFactsTail:
-            hippostd:content: ''
-            jcr:primaryType: hippostd:html
           /publicationsystem:seosummary:
             hippostd:content: ''
             jcr:primaryType: hippostd:html
@@ -504,9 +535,10 @@ definitions:
           publicationsystem:CoverageStart: 0001-01-01T12:00:00Z
           publicationsystem:KeyFacts: ''
           publicationsystem:NominalDate: 0001-01-01T12:00:00Z
-          publicationsystem:PubliclyAccessible: false
+          publicationsystem:PubliclyAccessible: true
           publicationsystem:Summary: ''
           publicationsystem:Title: ''
+          publicationsystem:earlyaccesskey: ''
           publicationsystem:publicationtier: ''
         jcr:primaryType: hipposysedit:prototypeset
       jcr:mixinTypes:

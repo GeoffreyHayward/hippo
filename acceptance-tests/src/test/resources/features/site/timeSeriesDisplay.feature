@@ -66,14 +66,14 @@ Feature: Display of publications forming a series
     Scenario: Ordering of publications by date
         When I navigate to the "valid publication series" page
         Then I should see the "Series Latest Publication" list containing:
-            | Lorem Ipsum Dolor 2014 ... |
+            | 2020 - Upcoming ... |
         And I should see the "Series Previous Publications" list containing:
+            | 2019 - Upcoming ...        |
+            | 2018 - Upcoming ...        |
+            | Lorem Ipsum Dolor 2014 ... |
             | Lorem Ipsum Dolor 2013 ... |
             | Lorem Ipsum Dolor 2012 ... |
         And I should see the "Series Upcoming Publications" list containing:
-            | 2018 - Upcoming ... |
-            | 2019 - Upcoming ... |
-            | 2020 - Upcoming ... |
             | 2021 - Upcoming ... |
 
     Scenario: Ordering of publications by title
@@ -83,11 +83,11 @@ Feature: Display of publications forming a series
             | A publication 2018 ... |
             | Publication 2017 ...   |
         And I should see the "Series Upcoming Publications" list containing:
-            | 2020 Upcoming ... |
+            | 2021 Upcoming ... |
 
     Scenario: List attachments and Links added to the series
         Given I navigate to the "valid publication series" page
         Then I should see "Series Resources" with:
             | Google Link                          |
-            | Attachment with text\n[pdf, size: 7.2 kB] |
-            | attachment.pdf\n[pdf, size: 7.2 kB]       |
+            | Attachment with text [pdf, size: 7.2 kB] |
+            | attachment.pdf [pdf, size: 7.2 kB]       |

@@ -82,7 +82,7 @@ public class SitePage extends AbstractSitePage {
     }
 
     public WebElement findLinkWithText(String linkText) {
-        return helper.findElement(By.xpath("//a[text()='" + linkText + "']"));
+        return helper.findElement(By.xpath("//a[.='" + linkText + "']"));
     }
 
     public WebElement findElementWithUiPath(String uiPath) {
@@ -99,6 +99,10 @@ public class SitePage extends AbstractSitePage {
 
     public WebElement findElementWithText(String text) {
         return helper.findOptionalElement(By.xpath("//*[text()='" + text + "']"));
+    }
+
+    public WebElement findElementThatContainsText(String text) {
+        return helper.findOptionalElement(By.xpath("//span[contains(.,'" + text + "')]"));
     }
 
     public WebElement findCssClass(String cssClass) {

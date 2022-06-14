@@ -104,11 +104,10 @@ Feature: Basic search
         When I click on the "Upcoming" link
         And I click on the "National statistics" link
         Then I should see search results starting with:
-            | 2018 - Upcoming |
-            | 2019 - Upcoming |
             | 2020 - Upcoming |
+            | 2019 - Upcoming |
+            | 2018 - Upcoming |
             | 2021 - Upcoming |
-            | 2022 - Upcoming |
 
     Scenario: Search results description is shown correctly with and without search terms
         When I navigate to the "search" page
@@ -185,16 +184,16 @@ Feature: Basic search
         When I navigate to the "home" page
         When I search for "series"
         Then I should see search results which also include:
-            | Series / Collection | Time Series Lorem Ipsum Dolor |
+            | Series / Collection | Search Test Series Summary |
         When I search for "archive"
         Then I should see search results which also include:
             | Archive             | Time Archive Lorem Ipsum Dolor |
 
-    Scenario: Latest publication links for series
-        Given I navigate to the "search" page
-        When I click on the "Series / Collection" button
-        Then I can click on the "Lorem Ipsum Dolor 2014" link
-        And I should see publication page titled "Lorem Ipsum Dolor 2014"
+#    Scenario: Latest publication links for series
+#        Given I navigate to the "search" page
+#        When I click on the "Series / Collection" button
+#        Then I can click on the "Lorem Ipsum Dolor 2014" link
+#        And I should see publication page titled "Lorem Ipsum Dolor 2014"
 
     Scenario: No latest publication links for series without flag
         Given I navigate to the "search" page
@@ -217,15 +216,3 @@ Feature: Basic search
         When I search for "SynonymTest"
         Then I should see 1 search result
         And I can click on link "synonym test"
-
-    Scenario: National Statistics kite mark on National statistic information type
-        Given I navigate to the "search" page
-        When I search for ""
-        And I click on the "National statistics" link
-        Then I should see search results which have the national statistics logo
-
-    Scenario: National Statistics kite mark not displayed on other information type
-        Given I navigate to the "search" page
-        When I search for ""
-        And I click on the "Audit" link
-        Then I should see search results which doesnt have the national statistics logo

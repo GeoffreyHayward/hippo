@@ -16,14 +16,28 @@
 
 <@hst.setBundle basename="publicationsystem.labels,publicationsystem.headers"/>
 
-<article class="article article--chaptered-publication" itemscope itemtype="http://schema.org/WebPage">
+<#macro restrictedContentOfUpcomingPublicationForChildPage>
+    <@publicationHeader publication=page.publication restricted=true />
+
+    <div class="grid-wrapper grid-wrapper--article" aria-label="Document Content">
+        <div class="grid-row">
+            <div class="column column--two-thirds page-block page-block--main">
+                <div class="article-section">
+                    <p data-uipath="ps.publication.upcoming-disclaimer" class="strong" itemprop="description">(Upcoming, not yet published)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</#macro>
+
+<#macro fullContentOfPubliclyAvailablePublicationForChildPage>
     <#if page.publication??>
         <div itemprop="isPartOf" itemscope itemtype="http://schema.org/PublicationIssue">
-            <@publicationHeader publication=page.publication />
+            <@publicationHeader publication=page.publication earlyAccessKey=hstRequest.request.getParameter("key")/>
         </div>
     </#if>
 
-    <div class="grid-wrapper grid-wrapper--article" aria-label="Document Content">
+    <div class="grid-wrapper grid-wrapper--article">
         <div class="grid-row">
             <#assign links=getStickySectionNavLinks({ "document" : page })/>
             <#if links?size != 0>
@@ -49,9 +63,19 @@
                 <@lastModified page.lastModified></@lastModified>
 
                 <div class="article-section no-border no-top-margin">
-                    <@pagination page/>
+                    <@pagination page=page earlyAccessKey=hstRequest.request.getParameter("key")/>
                 </div>
             </div>
         </div>
     </div>
-</article>
+</#macro>
+
+<#if page.publication??>
+    <article class="article article--chaptered-publication" itemscope itemtype="http://schema.org/WebPage">
+        <#if page.publication.publiclyAccessible>
+            <@fullContentOfPubliclyAvailablePublicationForChildPage/>
+        <#else>
+            <@restrictedContentOfUpcomingPublicationForChildPage/>
+        </#if>
+    </article>
+</#if>

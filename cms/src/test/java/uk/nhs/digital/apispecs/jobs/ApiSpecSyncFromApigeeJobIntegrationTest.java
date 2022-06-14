@@ -12,8 +12,6 @@ import static org.powermock.api.mockito.PowerMockito.*;
 import static uk.nhs.digital.test.util.JcrTestUtils.*;
 import static uk.nhs.digital.test.util.JcrTestUtils.BloomReachJcrDocumentVariantType.DRAFT;
 import static uk.nhs.digital.test.util.MockJcrRepoProvider.initJcrRepoFromYaml;
-import static uk.nhs.digital.test.util.StringTestUtils.ignoringUuids;
-import static uk.nhs.digital.test.util.StringTestUtils.ignoringWhiteSpacesIn;
 import static uk.nhs.digital.test.util.TestFileUtils.contentOfFileFromClasspath;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -39,20 +37,27 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
 import uk.nhs.digital.JcrDocumentUtils;
+import uk.nhs.digital.JcrNodeUtils;
+import uk.nhs.digital.test.util.JcrTestUtils;
+import uk.nhs.digital.toolbox.secrets.ApplicationSecrets;
 
+import java.util.Optional;
 import javax.jcr.Node;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
+
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({JcrDocumentUtils.class, ApiSpecSyncFromApigeeJob.class})
+@PrepareForTest({JcrDocumentUtils.class, JcrNodeUtils.class, ApiSpecSyncFromApigeeJob.class, ApplicationSecrets.class})
 @PowerMockIgnore({"javax.net.ssl.*", "javax.crypto.*", "javax.management.*"})
 public class ApiSpecSyncFromApigeeJobIntegrationTest {
 
-    private static final String PROPERTY_NAME_WEBSITE_HTML = "website:html";
+    private static final String PROPERTY_NAME_WEBSITE_JSON = "website:json";
 
     // Test data
     private static final String TEST_SPEC_ID = "269326";
     private static final String TEST_DATA_FILES_DIR = "/test-data/api-specifications/ApiSpecSyncFromApigeeJobIntegrationTest/";
+    private static final String SPEC_JSON_FROM_APIGEE = "{\"spec\":\"json from Apigee\"}";
 
     // Apigee access
     private static final String PARAM_APIGEE_RESOURCES_SPECS_ALL_URL = "devzone.apigee.resources.specs.all.url";
@@ -74,6 +79,7 @@ public class ApiSpecSyncFromApigeeJobIntegrationTest {
     private static final String APIGEE_ALL_SPECS_URL_PATH = "/dapi/api/organizations/test-org/specs/folder/home/specs";
     private static final String APIGEE_SINGLE_SPEC_URL_PATH_TEMPLATE = "/dapi/api/organizations/test-org/specs/doc/{specificationId}/content";
     private static final String APIGEE_SINGLE_SPEC_URL_PATH = APIGEE_SINGLE_SPEC_URL_PATH_TEMPLATE.replace("{specificationId}", TEST_SPEC_ID);
+
 
     private String apigeeAllSpecsUrl;
     private String apigeeSingleSpecUrlTemplate;
@@ -123,7 +129,7 @@ public class ApiSpecSyncFromApigeeJobIntegrationTest {
         verifyOauth2AccessTokenRetrievedFromApigee();
         verifyApigeeRequestForSpecificationsStatuses();
         verifyApigeeRequestForSpecification();
-        verifyHtmlGeneratedFromApigeeSpecWasSetOnApiSpecificationDocument();
+        verifyJsonReceivedFromApigeeSpecWasSetOnApiSpecificationDocument();
         verifyApiSpecificationDocumentWasPublished();
         verifySessionLogOut();
     }
@@ -192,21 +198,18 @@ public class ApiSpecSyncFromApigeeJobIntegrationTest {
         MockCrispHstServices.setDefaultResourceServiceBroker(mockResourceServiceBroker);
     }
 
-    private void verifyHtmlGeneratedFromApigeeSpecWasSetOnApiSpecificationDocument() {
+    private void verifyJsonReceivedFromApigeeSpecWasSetOnApiSpecificationDocument() {
 
         final Node specificationHandleNode = existingSpecHandleNode();
 
         final Node documentVariantNodeDraft = getDocumentVariantNode(specificationHandleNode, DRAFT);
 
-        final String actualSpecHtml =
-            getStringProperty(documentVariantNodeDraft, PROPERTY_NAME_WEBSITE_HTML);
-
-        final String expectedSpecHtml = codeGenGeneratedSpecificationHtml();
+        final String actualSpecJsonSavedInCms = JcrTestUtils.findStringProperty(documentVariantNodeDraft, PROPERTY_NAME_WEBSITE_JSON).orElse(null);
 
         assertThat(
-            "CodeGen-generated specification HTML has been set on the document",
-            ignoringUuids(ignoringWhiteSpacesIn(actualSpecHtml)),
-            is(ignoringUuids(ignoringWhiteSpacesIn(expectedSpecHtml)))
+            "API Specification JSON received from Apigee is saved on document.",
+            actualSpecJsonSavedInCms,
+            is(SPEC_JSON_FROM_APIGEE)
         );
     }
 
@@ -219,6 +222,11 @@ public class ApiSpecSyncFromApigeeJobIntegrationTest {
     private Node existingSpecHandleNode() {
         return getRelativeNode(
             repositoryRootNode, "/content/documents/corporate-website/api-specifications-location-a/api-spec-a");
+    }
+
+    private Node existingSpecImportMetadataNode() {
+        return getRelativeNode(
+            repositoryRootNode, "/hippo:configuration/hippo:modules/api-specification-sync/hippo:moduleconfig/api-specification-metadata");
     }
 
     private void apigeeReturnsAccessToken() {
@@ -288,7 +296,7 @@ public class ApiSpecSyncFromApigeeJobIntegrationTest {
                 .willReturn(
                     ok()
                         .withHeader("Content-Type", "application/json;charset=UTF-8")
-                        .withBody(apigeeApiSpecificationJson())
+                        .withBody(SPEC_JSON_FROM_APIGEE)
                 )
         );
     }
@@ -300,8 +308,18 @@ public class ApiSpecSyncFromApigeeJobIntegrationTest {
         repositoryRootNode = getRootNode(session);
 
         final Node specDocHandleNode = existingSpecHandleNode();
+        MockJcr.setQueryResult(
+            session,
+            "/jcr:root/content/documents/corporate-website//element(*, website:apispecification)/..[@jcr:primaryType='hippo:handle']",
+            Query.XPATH,
+            singletonList(specDocHandleNode)
+        );
 
-        MockJcr.setQueryResult(session, singletonList(specDocHandleNode));
+        MockJcr.setQueryResult(session,
+            "/jcr:root/hippo:configuration/hippo:modules/api-specification-sync/hippo:moduleconfig/api-specification-metadata",
+            Query.XPATH,
+            singletonList(existingSpecImportMetadataNode())
+        );
 
         // Low-level JCR-related components mocked where it was prohibitively hard to avoid:
 
@@ -325,19 +343,20 @@ public class ApiSpecSyncFromApigeeJobIntegrationTest {
         return testDataFromFile("specifications-in-apigee.json");
     }
 
-    private String apigeeApiSpecificationJson() {
-        return testDataFromFile("oasV3_complete.json");
-    }
-
-    private String codeGenGeneratedSpecificationHtml() {
-        return testDataFromFile("oasV3_complete.html");
-    }
-
     private String testDataFromFile(final String testDataFileName) {
         return contentOfFileFromClasspath(testDataFileLocation(testDataFileName));
     }
 
     private String testDataFileLocation(final String fileName) {
         return TEST_DATA_FILES_DIR + fileName;
+    }
+
+    // Invoked from the test-specific crisp-spring-context-properties-support.xml
+    public static class DummyApplicationSecrets {
+
+        public String getValue(final String propertyName) {
+            return Optional.ofNullable(System.getProperty(propertyName))
+                .orElse(System.getenv(propertyName));
+        }
     }
 }

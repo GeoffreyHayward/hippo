@@ -56,17 +56,6 @@ definitions:
             wicket.css:
             - document-title
             wicket.id: ${cluster.id}.left.item
-          /publicly_accessible:
-            /cluster.options:
-              falseLabel: UPCOMING (Show in upcoming publications list only)
-              jcr:primaryType: frontend:pluginconfig
-              trueLabel: FINALISED (Full content publicly accessible)
-            caption: Publicly Accessible
-            field: publicly_accessible
-            hint: ''
-            jcr:primaryType: frontend:plugin
-            plugin.class: org.hippoecm.frontend.editor.plugins.field.PropertyFieldPlugin
-            wicket.id: ${cluster.id}.left.item
           /Summary:
             /cluster.options:
               jcr:primaryType: frontend:pluginconfig
@@ -85,6 +74,17 @@ definitions:
               edition of the publication shows.
             jcr:primaryType: frontend:plugin
             plugin.class: org.hippoecm.frontend.editor.plugins.field.NodeFieldPlugin
+            wicket.id: ${cluster.id}.left.item
+          /sections:
+            /cluster.options:
+              jcr:primaryType: frontend:pluginconfig
+            caption: Highlights
+            compoundList: website:section,website:emphasisBox,website:infographic
+            contentPickerType: links
+            field: sections
+            hint: ''
+            jcr:primaryType: frontend:plugin
+            plugin.class: org.onehippo.forge.contentblocks.ContentBlocksFieldPlugin
             wicket.id: ${cluster.id}.left.item
           /CoverageStart:
             /cluster.options:
@@ -250,7 +250,6 @@ definitions:
             hipposysedit:type: CalendarDate
             hipposysedit:validators:
             - required
-            - publicationsystem-publication-date
             jcr:primaryType: hipposysedit:field
           /publicationid:
             hipposysedit:mandatory: false
@@ -259,16 +258,6 @@ definitions:
             hipposysedit:path: publicationsystem:publicationid
             hipposysedit:primary: false
             hipposysedit:type: String
-            jcr:primaryType: hipposysedit:field
-          /publicly_accessible:
-            hipposysedit:mandatory: false
-            hipposysedit:multiple: false
-            hipposysedit:ordered: false
-            hipposysedit:path: publicationsystem:PubliclyAccessible
-            hipposysedit:primary: false
-            hipposysedit:type: selection:BooleanRadioGroup
-            hipposysedit:validators:
-            - required
             jcr:primaryType: hipposysedit:field
           /related_links:
             hipposysedit:mandatory: false
@@ -286,13 +275,21 @@ definitions:
             hipposysedit:primary: false
             hipposysedit:type: String
             jcr:primaryType: hipposysedit:field
+          /sections:
+            hipposysedit:multiple: true
+            hipposysedit:ordered: true
+            hipposysedit:path: website:sections
+            hipposysedit:type: hippo:compound
+            hipposysedit:validators:
+            - contentblocks-validator
+            jcr:primaryType: hipposysedit:field
           /seosummary:
             hipposysedit:mandatory: false
             hipposysedit:multiple: false
             hipposysedit:ordered: false
             hipposysedit:path: publicationsystem:seosummary
             hipposysedit:primary: false
-            hipposysedit:type: hippostd:seoSummary
+            hipposysedit:type: website:seoSummary
             jcr:primaryType: hipposysedit:field
           /seosummarytext:
             hipposysedit:mandatory: false
@@ -349,9 +346,6 @@ definitions:
         jcr:primaryType: hippo:handle
       /hipposysedit:prototypes:
         /hipposysedit:prototype:
-          /publicationsystem:KeyFacts:
-            hippostd:content: ''
-            jcr:primaryType: hippostd:html
           /publicationsystem:Summary:
             hippostd:content: ''
             jcr:primaryType: hippostd:html
@@ -373,7 +367,6 @@ definitions:
           publicationsystem:CoverageEnd: 0001-01-01T12:00:00Z
           publicationsystem:CoverageStart: 0001-01-01T12:00:00Z
           publicationsystem:NominalDate: 0001-01-01T12:00:00Z
-          publicationsystem:PubliclyAccessible: false
           publicationsystem:Title: ''
           publicationsystem:gossid: 0
           publicationsystem:publicationid: ''

@@ -1,5 +1,10 @@
 <#ftl output_format="HTML">
 
+<#include "../../../common/macro/svgMacro.ftl">
+
+<#assign base64="uk.nhs.digital.freemarker.utils.StringToBase64"?new() />
+<#assign colour="uk.nhs.digital.freemarker.svg.SvgChangeColour"?new() />
+
 <#macro emphasisBox section>
     <#if section?is_string >
       <#assign slug = 'emphasis-' + section.emphasisType + '-' + section?keep_after('@') />
@@ -8,7 +13,7 @@
     </#if>
 
     <#if section.heading?has_content && slug??>
-        <#assign ariaAttribute = 'aria-labelledby' />
+        <#assign ariaAttribute = 'aria-label' />
         <#assign ariaValue = slugify(slug) />
     <#else>
         <#assign ariaAttribute = 'aria-label' />
@@ -43,7 +48,11 @@
                         <picture class="nhsd-a-image__picture">
                             <@hst.link hippobean=section.image fullyQualified=true var="iconImage" />
                             <#if iconImage?ends_with("svg")>
-                                <img src="${iconImage?replace("/binaries", "/svg-magic/binaries")}?colour=231f20" alt="${section.heading}" style="object-fit:fill" />
+                                <#if section.heading?? && section.heading?has_content>
+                                    <img src="data:image/svg+xml;base64,${base64(colour(section.svgXmlFromRepository, "231f20"))}" alt="${section.heading}" style="object-fit:fill" />
+                                <#else>
+                                    <img src="data:image/svg+xml;base64,${base64(colour(section.svgXmlFromRepository, "231f20"))}" style="object-fit:fill" />
+                                </#if>
                             <#else>
                                 <img src="${iconImage}" alt="${section.heading}" style="object-fit:contain" />
                             </#if>
@@ -65,7 +74,7 @@
                         <p class="nhsd-t-body-s nhsd-t-word-break">${section.bodyCustom}</p>
                     </div>
                 </#if>
-                
+
             </div>
         </div>
     </div>

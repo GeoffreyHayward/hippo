@@ -4,7 +4,7 @@ definitions:
     /hst:hst/hst:configurations/intranet/hst:sitemap:
       /_any_:
         /_index_:
-          hst:componentconfigurationid: hst:pages/404
+          hst:componentconfigurationid: hst:pages/intranet-404
           hst:componentconfigurationmappingnames:
           - website:general
           - website:event
@@ -14,6 +14,8 @@ definitions:
           - intranet:newsinternal
           - website:person
           - website:video
+          - website:componentlist
+          - intranet:task
           hst:componentconfigurationmappingvalues:
           - hst:pages/general
           - hst:pages/event
@@ -23,9 +25,11 @@ definitions:
           - hst:pages/news
           - hst:pages/website-person
           - hst:pages/video
+          - hst:pages/componentlist
+          - hst:pages/task
           hst:relativecontentpath: ${parent}/content
           jcr:primaryType: hst:sitemapitem
-        hst:componentconfigurationid: hst:pages/404
+        hst:componentconfigurationid: hst:pages/intranet-404
         hst:componentconfigurationmappingnames:
         - website:general
         - website:event
@@ -35,6 +39,8 @@ definitions:
         - intranet:newsinternal
         - website:person
         - website:video
+        - website:componentlist
+        - intranet:task
         hst:componentconfigurationmappingvalues:
         - hst:pages/general
         - hst:pages/event
@@ -44,12 +50,32 @@ definitions:
         - hst:pages/news
         - hst:pages/website-person
         - hst:pages/video
+        - hst:pages/componentlist
+        - hst:pages/task
         hst:relativecontentpath: ${1}
         jcr:primaryType: hst:sitemapitem
       /announcements:
         /_any_:
           hst:componentconfigurationid: hst:pages/announcement
           hst:relativecontentpath: announcements/${1}
+          jcr:primaryType: hst:sitemapitem
+        jcr:primaryType: hst:sitemapitem
+      /collaborate:
+        /_index_:
+          hst:componentconfigurationid: hst:pages/collaborate
+          hst:relativecontentpath: .
+          jcr:primaryType: hst:sitemapitem
+        jcr:primaryType: hst:sitemapitem
+      /how-we-work:
+        /_index_:
+          hst:componentconfigurationid: hst:pages/how-we-work
+          hst:relativecontentpath: .
+          jcr:primaryType: hst:sitemapitem
+        jcr:primaryType: hst:sitemapitem
+      /news:
+        /_index_:
+          hst:componentconfigurationid: hst:pages/news
+          hst:relativecontentpath: news
           jcr:primaryType: hst:sitemapitem
         jcr:primaryType: hst:sitemapitem
       /person:
@@ -72,8 +98,20 @@ definitions:
           hst:relativecontentpath: tasks/${1}
           jcr:primaryType: hst:sitemapitem
         /_index_:
-          hst:componentconfigurationid: hst:pages/taskhub
-          hst:relativecontentpath: tasks/task-hub
+          hst:componentconfigurationid: hst:pages/componentlist
+          hst:relativecontentpath: tasks
+          jcr:primaryType: hst:sitemapitem
+        jcr:primaryType: hst:sitemapitem
+      /teams:
+        /_index_:
+          hst:componentconfigurationid: hst:pages/teams
+          hst:relativecontentpath: teams
+          jcr:primaryType: hst:sitemapitem
+        jcr:primaryType: hst:sitemapitem
+      /who-we-are:
+        /_index_:
+          hst:componentconfigurationid: hst:pages/who-we-are
+          hst:relativecontentpath: .
           jcr:primaryType: hst:sitemapitem
         jcr:primaryType: hst:sitemapitem
       jcr:primaryType: hst:sitemap

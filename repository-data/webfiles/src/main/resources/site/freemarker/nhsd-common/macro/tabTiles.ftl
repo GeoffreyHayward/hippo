@@ -1,6 +1,9 @@
 <#ftl output_format="HTML">
 <#include "../../include/imports.ftl">
 
+<#assign base64="uk.nhs.digital.freemarker.utils.StringToBase64"?new() />
+<#assign colour="uk.nhs.digital.freemarker.svg.SvgChangeColour"?new() />
+
 <#macro tabTiles options>
     <#if options??>
         <#if options.title??>
@@ -18,10 +21,10 @@
 
         <article class="nhsd-m-card nhsd-m-card--with-icon">
             <#if options.linkType == "internal">
-            <a href="<@hst.link hippobean=options.link />" class="nhsd-a-box-link" aria-label="${title}">
+            <a href="<@hst.link hippobean=options.link />" class="nhsd-a-box-link" aria-label="${title}"/>
             <#elseif options.linkType == "external">
             <#assign onClickMethodCall = getOnClickMethodCall(document.class.name, options.title) />
-            <a href="${options.link}" onClick="${onClickMethodCall}" onKeyUp="return vjsu.onKeyUp(event)" class="nhsd-a-box-link" aria-label="${title}">
+            <a href="${options.link}" onClick="${onClickMethodCall}" onKeyUp="return vjsu.onKeyUp(event)" class="nhsd-a-box-link" aria-label="${title}"/>
             <#elseif options.linkType == "asset">
             <#assign onClickMethodCall = getOnClickMethodCall(document.class.name, options.link) />
             <a href="<@hst.link hippobean=options.link />" onClick="${onClickMethodCall}" onKeyUp="return vjsu.onKeyUp(event)" class="nhsd-a-box-link" aria-label="${title}">
@@ -37,9 +40,13 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" viewBox="0 0 16 16"  width="42%" height="42%" x="29%" y="29%"/>
                                 </svg>
                                 <@hst.link var="icon" hippobean=options.icon.original fullyQualified=true />
-                                <#if icon?ends_with("svg")>
-                                    <img src="${icon?replace("/binaries", "/svg-magic/binaries")}?colour=231f20" alt="${title}" />
-                                        <#else>
+                                <#if icon?ends_with("svg") && options.svgXmlFromRepository?? && options.svgXmlFromRepository?has_content>
+                                    <#if title?? && title?has_content>
+                                        <img src="data:image/svg+xml;base64,${base64(colour(options.svgXmlFromRepository, "231f20"))}" alt="${title}" />
+                                    <#else>
+                                        <img src="data:image/svg+xml;base64,${base64(colour(options.svgXmlFromRepository, "231f20"))}" />
+                                    </#if>
+                                <#else>
                                     <img src="${icon}" alt="${title}" />
                                 </#if>
 

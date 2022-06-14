@@ -3,11 +3,13 @@ definitions:
   config:
     /hst:hst/hst:configurations/common/hst:pages/publishedwork:
       /main:
-        hst:componentclassname: uk.nhs.digital.common.components.ContentRewriterComponent
+        hst:componentclassname: uk.nhs.digital.common.components.PublishedWorkArticleComponent
         hst:parameternames:
         - googleAnalyticsContentRewriter
         - brandRefreshContentRewriter
+        - stripTagsContentRewriter
         hst:parametervalues:
+        - 'true'
         - 'true'
         - 'true'
         hst:template: published-work-article

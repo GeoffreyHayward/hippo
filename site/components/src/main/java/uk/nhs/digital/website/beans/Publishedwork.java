@@ -115,11 +115,16 @@ public class Publishedwork extends CommonFieldsBean implements Paginated {
 
     @HippoEssentialsGenerated(internalName = "website:noindexcontrol")
     public boolean getNoIndexControl() {
-        return getSingleProperty("website:noindexcontrol");
+        return getSingleProperty("website:noindexcontrol", true);
     }
 
     @Override
     public Pagination paginate() {
         return new Pagination(null, getLinks().stream().findFirst().map(i -> new IndexPageImpl(i.getDisplayName(), i)).orElse(null));
     }
+
+    public String getEarlyAccessKey() {
+        return getSingleProperty("website:earlyaccesskey");
+    }
+
 }

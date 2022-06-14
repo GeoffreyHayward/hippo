@@ -276,6 +276,15 @@ public class SiteSteps extends AbstractSpringSteps {
         }
     }
 
+    @Then("^I should see headers that starts with the following:$")
+    public void thenIShouldAHeaderThatStartsWithTheFollowing(DataTable contentsTable) throws Throwable {
+        List<String> headers = contentsTable.asList(String.class);
+        for (String header : headers) {
+            header = header.replaceAll("^\"|\"$", "");
+            assertNotNull("The text should start with the following: " + header, sitePage.findElementThatContainsText(header));
+        }
+    }
+
     @Then("^the index is rendered with entries:")
     public void thenIndexIsRendered(final DataTable elementAttributes) throws Throwable {
         thenIShouldSeeMultipleElementsWithAttributes(elementAttributes);
@@ -342,9 +351,9 @@ public class SiteSteps extends AbstractSpringSteps {
             String linkText = downloadLink.get(0);
             String linkFileName = downloadLink.get(1);
 
-            WebElement downloadElement = sitePage.findElementWithTitle(linkText);
+            WebElement downloadElement = sitePage.findLinkWithText(linkText);
 
-            assertThat("I can find download link with title: " + linkText,
+            assertThat("I can find download link with text: " + linkText,
                 downloadElement, is(notNullValue()));
 
             String url = downloadElement.getAttribute("href");
