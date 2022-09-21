@@ -6,4 +6,4 @@ import './utils/public-path';
 import {initCookieConsent} from "./relevance/relevance-cookie";
 import "./intranet/intranet";
 
-initCookieConsent();
+initCookieConsent()
