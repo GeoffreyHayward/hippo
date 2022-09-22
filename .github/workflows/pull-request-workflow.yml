@@ -18,15 +18,17 @@ jobs:
     steps:
 
       # Step 1
-      # The checkout is done in two steps so that master can be used for the diff
-      # in step 6.
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: master
-      - name: Switch to changes
-        run: git checkout ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: debug
+        run: |
+          git remote -v
+          git branch -r
+          git fetch origin master:refs/remotes/origin/master
 
       # Step 2
       - name: Check commit message
