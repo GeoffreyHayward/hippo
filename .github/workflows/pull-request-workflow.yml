@@ -18,11 +18,14 @@ jobs:
     steps:
 
       # Step 1
+      # The checkout is done in to steps so that master can be used for the diff
+      # in step 6.
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: master
+      - name: Switch to changes
+        run: git checkout ${{ github.event.pull_request.head.sha }}
 
       # Step 2
       - name: Check commit message
