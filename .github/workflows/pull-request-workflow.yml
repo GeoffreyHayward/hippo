@@ -85,10 +85,9 @@ jobs:
 
       - name: Lint JS Files
         id: jsLint
-        run: make lint-frontend
-
-      - name: "Added PR comment"
-        if: ${{ always() }}
+        run: make ci-pipeline-lint-frontend
+      - name: Lint fail message
+        if: ${{ always() && steps.jsLint.outcome == 'failure' }}
         uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
@@ -97,7 +96,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `Outcome ${{steps.jsLint.outcome}}`
+              body: 'JS Lint has failed. Run `make lint-frontend` locally to find what needs fixing.'
             })
 
       # Step 7 (Functional Tests)
