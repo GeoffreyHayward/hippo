@@ -2,6 +2,7 @@ name: Database Restore CS Environment
 
 on:
   # Temp while testing. To be a cron job.
+  # 1
   push:
     branches:
       - master
