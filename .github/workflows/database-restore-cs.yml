@@ -1,0 +1,15 @@
+name: Database Restore CS Environment
+
+on:
+  # Temp while testing. To be a cron job.
+  push:
+    branches:
+      - master
+
+jobs:
+  reusable_workflow_job:
+    uses: ./.github/workflows/database-restore.yml@master
+    with:
+      username: Geoffrey
+    secrets:
+      token: ${{ secrets.TOKEN }}

@@ -1,0 +1,20 @@
+name: Database Restore Main Workflow
+
+on:
+  workflow_call:
+    inputs:
+      username:
+        required: true
+        type: string
+    secrets:
+      envPAT:
+        required: true
+
+jobs:
+  example_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test
+        run: echo Hello, ${{ inputs.username }}
+
+
