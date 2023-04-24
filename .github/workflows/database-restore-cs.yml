@@ -8,7 +8,7 @@ on:
 
 jobs:
   reusable_workflow_job:
-    uses: ./.github/workflows/database-restore.yml@master
+    uses: ./.github/workflows/database-restore.yml
     with:
       username: Geoffrey
     secrets:
