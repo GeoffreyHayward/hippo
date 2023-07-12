@@ -28,8 +28,7 @@ jobs:
         run: |
           make git.update-environment-tag ENV=prd VERSION=rc
           make git.update-environment-tag ENV=rc VERSION=uat
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+
 
       - name: Get JIRA List
         id: getJiraListId
