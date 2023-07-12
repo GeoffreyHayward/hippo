@@ -23,8 +23,10 @@ jobs:
         with:
           fetch-depth: 0 # Need all the tags for versioning
           ref: master
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Move the RC Tag
+
+      - name: Move the Tags
         run: |
           make git.update-environment-tag ENV=prd VERSION=rc
           make git.update-environment-tag ENV=rc VERSION=uat
