@@ -2,9 +2,6 @@
 # and report what will be deployed.
 name: Deploy to Production - Stage 1
 
-permissions:
-  contents: write
-
 on:
   push:
     branches:
