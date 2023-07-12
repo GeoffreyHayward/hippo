@@ -3,12 +3,12 @@
 name: Deploy to Production - Stage 1
 
 on:
-  schedule:
-    # Runs at 3 pm weekdays (UTC time)
-    - cron: "0 15 * * 1-5"
+  push:
+    branches:
+      - master
 
 env:
-  SLACK_CHANNEL: "C0353KHFXNJ"
+  SLACK_CHANNEL: "C0353KHFXNJt"
 
 jobs:
 
@@ -28,6 +28,8 @@ jobs:
         run: |
           make git.update-environment-tag ENV=prd VERSION=rc
           make git.update-environment-tag ENV=rc VERSION=uat
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Get JIRA List
         id: getJiraListId
