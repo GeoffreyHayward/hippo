@@ -3,7 +3,6 @@
 name: Deploy to Production - Stage 1
 
 permissions:
-  actions: write
   contents: write
 
 on:
