@@ -23,7 +23,7 @@ jobs:
         with:
           fetch-depth: 0 # Need all the tags for versioning
           ref: master
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
 
       - name: Move the Tags
