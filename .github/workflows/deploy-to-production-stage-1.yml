@@ -16,6 +16,7 @@ jobs:
     name: Prepare Tags
     runs-on: ubuntu-latest
     timeout-minutes: 85
+
     steps:
 
       - name: Checkout
@@ -23,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0 # Need all the tags for versioning
           ref: master
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}
 
 
       - name: Move the Tags
