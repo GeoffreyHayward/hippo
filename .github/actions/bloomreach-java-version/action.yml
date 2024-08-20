@@ -1,5 +1,10 @@
-name: 'Bloomreach Java Version'
+name: 'Bloomreach Java Version Resolver'
 description: 'Sets the Java version based on the Bloomreach version.'
+
+outputs:
+  version:
+    description: "Required Java Version"
+    value: ${{ steps.java_version.outputs.version }}
 
 runs:
   using: "composite"
