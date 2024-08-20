@@ -1,0 +1,48 @@
+name: 'Bloomreach Java Version'
+description: 'Sets the Java version based on the Bloomreach version.'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Extract the Bloomreach Version
+      id: bloomreach_version
+      run: |
+        version=$(yq -p=xml -o=json '.' pom.xml | jq -r '.project.parent.version')
+        echo "version=$version" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Print Bloomreach Version
+      run: |
+        echo "Bloomreach version: ${{ steps.bloomreach_version.outputs.version }}"
+      shell: bash
+
+    - name: Select Java version
+      id: java_version
+      uses: actions/github-script@v7
+      env:
+        BR_VERSION: ${{ steps.bloomreach_version.outputs.version }}
+      with:
+        script: |
+          if (process.env.BR_VERSION.startsWith("14")) {
+            // BR 14 runs on Java 8
+            core.setOutput("version", "8");
+          } else if (process.env.BR_VERSION.startsWith("15")) {
+            // BR 15 runs on Java 11
+            core.setOutput("version", "11");
+          } else if (process.env.BR_VERSION.startsWith("16")) {
+            // BR 16 runs on Java 17
+            core.setOutput("version", "17");
+          } else {
+            core.setFailed("Unsupported Bloomreach version.");
+          }
+
+    - name: Print Java Version
+      run: |
+        echo "Java version: ${{ steps.java_version.outputs.version }}"
+      shell: bash
+
+    - name: Set up JDK 8
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'adopt'
+        java-version: ${{ steps.java_version.outputs.version }}
