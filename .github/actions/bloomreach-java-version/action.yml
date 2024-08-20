@@ -1,9 +1,9 @@
-name: 'Bloomreach Java Version Resolver'
-description: 'Sets the Java version based on the Bloomreach version.'
+name: 'Bloomreach Java Version Finder'
+description: 'Finds the suppored Java version number for the current Bloomreach version number.'
 
 outputs:
   version:
-    description: "Required Java Version"
+    description: "The suppored Java Version"
     value: ${{ steps.java_version.outputs.version }}
 
 runs:
@@ -13,6 +13,10 @@ runs:
       id: bloomreach_version
       run: |
         version=$(yq -p=xml -o=json '.' pom.xml | jq -r '.project.parent.version')
+        if [ -z "$version" ]; then
+          echo "Failed to extract Bloomreach version."
+          exit 1
+        fi
         echo "version=$version" >> $GITHUB_OUTPUT
       shell: bash
 
@@ -41,7 +45,7 @@ runs:
             core.setFailed("Unsupported Bloomreach version.");
           }
 
-    - name: Print Requried Java Version
+    - name: Print Required Java Version
       run: |
         echo "Java version: ${{ steps.java_version.outputs.version }}"
       shell: bash
