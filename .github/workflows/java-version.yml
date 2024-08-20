@@ -1,0 +1,43 @@
+name: Test Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  integrity:
+    name: Integrity Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Run a basic integrity check
+        run: echo "This is where your integrity checks would run."
+
+  test_report:
+    name: Create Test Report
+    needs: integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      PAYLOAD_CONTEXT: ${{ toJson(github.event.client_payload) }}
+      BRANCH: ${{ github.event.client_payload.data.text }}
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH }}
+          fetch-depth: 0 # Need all the tags for versioning
+
+      - name: Setup Java
+        uses: ./.github/actions/bloomreach-java-version
+
+      - name: Print Java Version
+        run: java -version
