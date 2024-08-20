@@ -9,19 +9,9 @@ on:
       - master
 
 jobs:
-  integrity:
-    name: Integrity Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      
-      - name: Run a basic integrity check
-        run: echo "This is where your integrity checks would run."
 
   test_report:
     name: Create Test Report
-    needs: integrity
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
