@@ -6,7 +6,7 @@
 * To run an initial build of all modules run `mvn clean verify` (only need to do this once).
 * To start local server `make serve`.
 * To run all tests `make test`.
-* To get more help, simply run `make help`.
+* To get more help, simply run `make help`. 
 
 ## Repository Persistence
 
