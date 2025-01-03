@@ -16,9 +16,23 @@ jobs:
             --repo ${{ github.repository }} \
             --undo
 
-      - name: Add Instructional Comment
+      - name: PrintPR Process Message
         run: |
           gh pr review ${{ github.event.pull_request.number }} \
             --repo ${{ github.repository }} \
             --request-changes \
-            --body "Please fill in the testing notes here. Developer, respond to the comments. Tester can then approve."
+            --body "## Pull Request Process
+
+1. **All automated tests must pass**  
+   - Ensure the CI pipeline is green before moving forward.
+
+2. **All PR conversations must be marked as resolved**  
+   - Every comment thread should be closed or clarified.
+
+3. **A tester must mark the PR as “Ready for review”**  
+   - This indicates testing is complete and the PR can undergo final checks.
+
+4. **A developer must review and approve**  
+   - This can happen before or after the PR is “Ready,” but final approval is required.
+
+By following these steps, we keep our process consistent and ensure high-quality merges."
