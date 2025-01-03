@@ -21,4 +21,4 @@ jobs:
           gh pr review ${{ github.event.pull_request.number }} \
             --repo ${{ github.repository }} \
             --request-changes \
-            --body "Please fill in the testing notes here. Developer, respond to the comments. Tester can then approve."
+            --body-file "pr_ready_body.md"
