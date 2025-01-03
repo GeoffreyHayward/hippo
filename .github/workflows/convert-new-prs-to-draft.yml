@@ -25,4 +25,4 @@ jobs:
           gh pr review ${{ github.event.pull_request.number }} \
             --repo ${{ github.repository }} \
             --request-changes \
-            --body-file ".github/messages/pr-ready.md"
+            --body-file ".github/messages/pr-started.md"
