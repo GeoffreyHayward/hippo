@@ -12,4 +12,13 @@ jobs:
     steps:
       - name: Convert to draft
         run: |
-          gh pr ready ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --undo 
+          gh pr ready ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --undo
+
+      - name: Add Instructional Comment
+        run: |
+          gh pr review ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --request-changes \
+            --body "Please fill in the testing notes here. Developer, respond to the comments. Tester can then approve."
