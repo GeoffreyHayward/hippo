@@ -10,6 +10,10 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+        
       - name: Convert to draft
         run: |
           gh pr ready ${{ github.event.pull_request.number }} \
@@ -21,4 +25,4 @@ jobs:
           gh pr review ${{ github.event.pull_request.number }} \
             --repo ${{ github.repository }} \
             --request-changes \
-            --body "Please fill in the testing notes here. Developer, respond to the comments. Tester can then approve."
+            --body-file ".github/messages/pr-started.md"
