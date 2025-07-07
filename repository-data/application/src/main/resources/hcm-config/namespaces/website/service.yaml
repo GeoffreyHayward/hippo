@@ -76,6 +76,18 @@ definitions:
             plugin.class: org.hippoecm.frontend.editor.plugins.field.PropertyFieldPlugin
             wicket.id: ${cluster.id}.field
           /seosummary:
+            /cluster.options:
+              ckeditor.config.appended.json: '{toolbar: [{ name: ''summarytoolbar'',
+                items: [] }] }'
+              ckeditor.config.overlayed.json: '{linkShowAdvancedTab: true, extraPlugins:''wordcount_modified,autogrow,wysiwygarea'',
+                contentsCss: ''ckeditor/plugins/wordcount_modified/css/wordcount.css'',
+                wordcount_modified: { showParagraphs: false, showWordCount: false,
+                showCharCount: true, countSpacesAsChars: true, maxCharCount: 320,
+                warnOnLimitOnly: true, hardLimit: false, showProgressBar: true, absoluteMinimumThreshold:
+                10, minimumThreshold: 160, optimumMinimumThreshold: 230, optimumMaximumThreshold:
+                300}, autoGrow_onStartup: true, autoGrow_maxHeight: 100, enterMode:
+                2, autoParagraph: false , disableNativeSpellChecker: false}'
+              jcr:primaryType: frontend:pluginconfig
             caption: SEO Summary
             field: seosummary
             hint: ''
@@ -286,6 +298,17 @@ definitions:
             jcr:primaryType: frontend:plugin
             plugin.class: org.hippoecm.frontend.editor.plugins.field.PropertyFieldPlugin
             wicket.id: ${cluster.id}.field
+          /showServiceResult:
+            /cluster.options:
+              jcr:primaryType: frontend:pluginconfig
+            caption: Show as a result on the Service catalogue
+            field: showServiceResult
+            hint: This field is only required if creating a document for the Service
+              catalogue. The document must also be on the /services path (i.e. within
+              the Services folder).
+            jcr:primaryType: frontend:plugin
+            plugin.class: org.hippoecm.frontend.editor.plugins.field.PropertyFieldPlugin
+            wicket.id: ${cluster.id}.field
         jcr:primaryType: editor:templateset
       /hipposysedit:nodetype:
         /hipposysedit:nodetype:
@@ -448,7 +471,7 @@ definitions:
             hipposysedit:ordered: false
             hipposysedit:path: website:seosummary
             hipposysedit:primary: false
-            hipposysedit:type: website:seoSummary
+            hipposysedit:type: hippostd:html
             jcr:primaryType: hipposysedit:field
           /seosummarytext:
             hipposysedit:mandatory: false
@@ -471,6 +494,14 @@ definitions:
             hipposysedit:multiple: false
             hipposysedit:ordered: false
             hipposysedit:path: website:showApiResult
+            hipposysedit:primary: false
+            hipposysedit:type: Boolean
+            jcr:primaryType: hipposysedit:field
+          /showServiceResult:
+            hipposysedit:mandatory: false
+            hipposysedit:multiple: false
+            hipposysedit:ordered: false
+            hipposysedit:path: website:showServiceResult
             hipposysedit:primary: false
             hipposysedit:type: Boolean
             jcr:primaryType: hipposysedit:field
@@ -631,6 +662,7 @@ definitions:
           - ''
           website:shortsummary: ''
           website:showApiResult: false
+          website:showServiceResult: true
           website:title: ''
         jcr:primaryType: hipposysedit:prototypeset
       jcr:mixinTypes:

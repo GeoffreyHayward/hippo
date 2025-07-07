@@ -1,9 +1,9 @@
-import $ from "jquery";
+import $ from 'jquery';
 
-import "jquery-ui/ui/widgets/datepicker";
-import addValidate from "./jquery-validate-1.1.2";
-import hippoValidate from "./jquery-hippo-validate";
-import {qsa} from "../utils/utils";
+import 'jquery-ui/ui/widgets/datepicker';
+import addValidate from './jquery-validate-1.1.2';
+import hippoValidate from './jquery-hippo-validate';
+import { qsa } from '../utils/utils';
 
 addValidate($);
 hippoValidate($);
@@ -17,7 +17,6 @@ export default function (formName, formConditions, validationUrl, submissionUrl)
     var $previousButton = $('#previousPageButton');
     var $nextButton = $('#nextPageButton');
     var $errorWarning = $('#feedbackPanel');
-    var $successMessage = $('.eforms-success-box');
 
     var valid = false;
     var userHitSubmit = false;
@@ -107,11 +106,11 @@ export default function (formName, formConditions, validationUrl, submissionUrl)
                         params[fieldName] = '';
                     }
                 }
-            } else if (dateFieldId.indexOf('__DD') !== -1) {
+            } else if (dateFieldId && dateFieldId.indexOf('__DD') !== -1) {
                 dd = $(this).val() ? $(this).val() : 0;
-            } else if (dateFieldId.indexOf('__MM') !== -1) {
+            } else if (dateFieldId && dateFieldId.indexOf('__MM') !== -1) {
                 mm = $(this).val() ? $(this).val() : 0;
-            } else if (dateFieldId.indexOf('__YYYY') !== -1) {
+            } else if (dateFieldId && dateFieldId.indexOf('__YYYY') !== -1) {
                 yyyy = $(this).val() ? $(this).val() : 0;
             } else if (fieldType === 'hidden') {
                 if (dd !== 0 || mm !== 0 || yyyy !== 0) {
@@ -398,9 +397,23 @@ export default function (formName, formConditions, validationUrl, submissionUrl)
 
     /* Show success message and hide everything else*/
     function showSuccessMessage() {
-        $successMessage.removeClass('visually-hidden');
-        $successMessage.removeClass('nhsd-t-sr-only');
-        $form.remove();
+
+        // Fetch handle the template
+        var template = document.getElementById('form-success-template');
+        if (!$form || !template) {
+            return; // guard—DOM not found
+        }
+
+        // Clone the inert template (DocumentFragment)
+        var frag = template.content.cloneNode(true);
+        var banner = frag.querySelector('#form-status');
+
+        // Swap the form out, insert the banner in the same place
+        $form.replaceWith(frag);
+
+        setTimeout(() => {
+            requestAnimationFrame(() => banner.focus());
+        }, 200);
     }
 
     /* Show the error messages */
